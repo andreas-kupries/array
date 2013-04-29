@@ -16,3 +16,7 @@ mkphash - Extend kphash, multiple independent mphashes in a single store.
 Use case for mkphash is the cached store of, say ticket changes. The
 cache contains the latest (mtime) state for all tickets (documents)
 and their fields (hash key).
+
+
+Check the method result requirements for 'tie', and put them into the
+code and tests.
