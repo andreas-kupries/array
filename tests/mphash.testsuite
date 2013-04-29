@@ -1,0 +1,414 @@
+## -*- tcl -*-
+## (c) 2013 Andreas Kupries
+# # ## ### ##### ######## ############# #####################
+## Test suite for mphash stores, common parts across implementations.
+#
+## The external procedures 'already' and 'badmethod' are used to
+## generate implementation specific error messages. Implementations
+## have to be provided by the invoking implementation-specific
+## testsuite.
+#
+## The external procedures 'new-store' and 'release-store' are used to
+## create and destroy an instance of the store under test.
+
+# ------------*----------------
+# dispatch    | *
+# destroy     | *
+# ------------*----------------
+# clear       | *
+# exists      | *
+# get         | *
+# gett        |
+# gettv       |
+# getv        | *
+# names       | *
+# set         | *
+# setv        |  - mphash specifics (mtime default and explicit)
+# size        | *
+# unset       | *
+# unsetv      | *
+# ------------*----------------
+
+# # ## ### ##### ######## ############# #####################
+## dispatch
+
+test mphash::[who]-dispatch-1.0 {instance, no method} -setup {
+    new-store
+} -body {
+    mymphash
+} -cleanup {
+    release-store
+} -returnCodes error \
+    -result {wrong # args: should be "mymphash method ?arg ...?"}
+
+test mphash::[who]-dispatch-1.1 {instance, bad method name} -setup {
+    new-store
+} -body {
+    mymphash foo
+} -cleanup {
+    release-store
+} -returnCodes error \
+    -result [badmethod foo {clear destroy exists get gett gettv getv names set setv size unset unsetv}]
+
+# # ## ### ##### ######## ############# #####################
+## destructor
+
+test mphash::[who]-destroy-1.0 {destroy, wrong#args, too many} -setup {
+    new-store
+} -body {
+    mymphash destroy X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymphash destroy"}
+
+test mphash::[who]-destroy-1.1 {destroy} -setup {
+    new-store
+} -body {
+    release-store
+    info commands ::mymphash
+} -result {}
+
+# # ## ### ##### ######## ############# #####################
+## clear
+
+test mphash::[who]-clear-1.0 {clear, wrong#args, too many} -setup {
+    new-store
+} -body {
+    mymphash clear S
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymphash clear"}
+
+test mphash::[who]-clear-1.1 {clear, none} -setup {
+    new-store
+} -body {
+    list [mymphash size] [mymphash clear] [mymphash size]
+} -cleanup {
+    release-store
+} -result {0 {} 0}
+
+test mphash::[who]-clear-1.2 {clear, some} -setup {
+    new-store
+    mymphash setv S C
+    mymphash setv A R
+    mymphash setv R A
+    mymphash setv C S
+} -body {
+    list [mymphash size] [mymphash clear] [mymphash size]
+} -cleanup {
+    release-store
+} -result {4 {} 0}
+
+# # ## ### ##### ######## ############# #####################
+## exists
+
+test mphash::[who]-exists-1.0 {exists, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    mymphash exists
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymphash exists key"}
+
+test mphash::[who]-exists-1.1 {exists, wrong#args, too many} -setup {
+    new-store
+} -body {
+    mymphash exists S X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymphash exists key"}
+
+test mphash::[who]-exists-1.2 {exists, no} -setup {
+    new-store
+} -body {
+    mymphash exists S
+} -cleanup {
+    release-store
+} -result 0
+
+test mphash::[who]-exists-1.3 {exists, yes} -setup {
+    new-store
+    mymphash setv S A
+} -body {
+    mymphash exists S
+} -cleanup {
+    release-store
+} -result 1
+
+# # ## ### ##### ######## ############# #####################
+## get
+
+test mphash::[who]-get-1.0 {get, wrong#args, too many} -setup {
+    new-store
+} -body {
+    mymphash get X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymphash get"}
+
+test mphash::[who]-get-1.1 {get, nothing} -setup {
+    new-store
+} -body {
+    mymphash get
+} -cleanup {
+    release-store
+} -result {}
+
+test mphash::[who]-get-1.2 {get, some} -setup {
+    new-store
+    mymphash setv S C
+    mymphash setv A R
+    mymphash setv R A
+    mymphash setv C S
+} -body {
+    kt dictsort [mymphash get]
+} -cleanup {
+    release-store
+} -result {A R C S R A S C}
+
+# # ## ### ##### ######## ############# #####################
+## getv
+
+test mphash::[who]-getv-1.0 {getv, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    mymphash getv
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymphash getv key"}
+
+test mphash::[who]-getv-1.1 {getv, wrong#args, too many} -setup {
+    new-store
+} -body {
+    mymphash getv S X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymphash getv key"}
+
+test mphash::[who]-getv-1.2 {getv, unknown key} -setup {
+    new-store
+} -body {
+    mymphash getv 0
+} -cleanup {
+    release-store
+} -returnCodes error -result {Expected key, got "0"}
+
+test mphash::[who]-getv-1.3 {getv, known} -setup {
+    new-store
+    mymphash setv S S
+} -body {
+    mymphash getv S
+} -cleanup {
+    release-store
+} -result S
+
+test mphash::[who]-getv-1.4 {getv, known} -setup {
+    new-store
+    mymphash setv S C
+    mymphash setv A R
+    mymphash setv R A
+    mymphash setv C S
+} -body {
+    mymphash getv A
+} -cleanup {
+    release-store
+} -result R
+
+# # ## ### ##### ######## ############# #####################
+## names
+
+test mphash::[who]-names-1.0 {names, wrong#args, too many} -setup {
+    new-store
+} -body {
+    mymphash names S
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymphash names"}
+
+test mphash::[who]-names-1.1 {names, none} -setup {
+    new-store
+} -body {
+    mymphash names
+} -cleanup {
+    release-store
+} -result {}
+
+test mphash::[who]-names-1.2 {names, some} -setup {
+    new-store
+    mymphash setv S C
+    mymphash setv A R
+    mymphash setv R A
+    mymphash setv C S
+} -body {
+    lsort -dict [mymphash names]
+} -cleanup {
+    release-store
+} -result {A C R S}
+
+# # ## ### ##### ######## ############# #####################
+## set
+
+test mphash::[who]-set-1.0 {set, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    mymphash set
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymphash set dict"}
+
+test mphash::[who]-set-1.1 {set, wrong#args, too many} -setup {
+    new-store
+} -body {
+    mymphash set D X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymphash set dict"}
+
+test mphash::[who]-set-1.2 {set} -setup {
+    new-store
+} -body {
+    mymphash set {A B X Z C R}
+    kt dictsort [mymphash get]
+} -cleanup {
+    release-store
+} -result {A B C R X Z}
+
+# # ## ### ##### ######## ############# #####################
+## setv
+
+test mphash::[who]-setv-1.0 {setv, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    mymphash setv
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymphash setv key value ?time?"}
+
+test mphash::[who]-setv-1.1 {setv, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    mymphash setv K
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymphash setv key value ?time?"}
+
+test mphash::[who]-setv-1.2 {setv, wrong#args, too many} -setup {
+    new-store
+} -body {
+    mymphash setv K V T X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymphash setv key value ?time?"}
+
+test mphash::[who]-setv-1.3 {setv} -setup {
+    new-store
+} -body {
+    mymphash setv A B
+} -cleanup {
+    release-store
+} -result B
+
+# TODO: default time, explicit time (integer, no integer (bad))
+# TODO gett, gettv
+
+# # ## ### ##### ######## ############# #####################
+## size
+
+test mphash::[who]-size-1.0 {size, wrong#args, too many} -setup {
+    new-store
+} -body {
+    mymphash size X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymphash size"}
+
+test mphash::[who]-size-1.1 {size} -setup {
+    new-store
+    mymphash setv A B
+} -body {
+    mymphash size
+} -cleanup {
+    release-store
+} -result 1
+
+test mphash::[who]-size-1.2 {size} -setup {
+    new-store
+    mymphash setv A B
+    mymphash setv B C
+} -body {
+    mymphash size
+} -cleanup {
+    release-store
+} -result 2
+
+# # ## ### ##### ######## ############# #####################
+## unset
+
+test mphash::[who]-unset-1.0 {unset, wrong#args, too many} -setup {
+    new-store
+} -body {
+    mymphash unset P X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymphash unset ?pattern?"}
+
+test mphash::[who]-unset-1.1 {unset} -setup {
+    new-store
+    mymphash set {A B AX Z C R}
+} -body {
+    mymphash unset A*
+    kt dictsort [mymphash get]
+} -cleanup {
+    release-store
+} -result {C R}
+
+test mphash::[who]-unset-1.2 {unset} -setup {
+    new-store
+    mymphash set {A B AX Z C R}
+} -body {
+    mymphash unset
+    kt dictsort [mymphash get]
+} -cleanup {
+    release-store
+} -result {}
+
+# # ## ### ##### ######## ############# #####################
+## unsetv
+
+test mphash::[who]-unsetv-1.0 {unsetv, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    mymphash unsetv
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymphash unsetv key"}
+
+test mphash::[who]-unsetv-1.1 {unsetv, wrong#args, too many} -setup {
+    new-store
+} -body {
+    mymphash unsetv K X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymphash unsetv key"}
+
+test mphash::[who]-unsetv-1.2 {unsetv, known} -setup {
+    new-store
+    mymphash set {A B AX Z C R}
+} -body {
+    mymphash unsetv A
+    kt dictsort [mymphash get]
+} -cleanup {
+    release-store
+} -result {AX Z C R}
+
+test mphash::[who]-unsetv-1.3 {unsetv, unknown} -setup {
+    new-store
+    mymphash set {A B AX Z C R}
+} -body {
+    mymphash unsetv B
+} -cleanup {
+    release-store
+} -returnCodes error -result {Expected key, got "B"}
+
+# # ## ### ##### ######## ############# #####################
+return
