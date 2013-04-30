@@ -1,9 +1,7 @@
 # -*- tcl -*-
 ## (c) 2013 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
-## sqlite based phash storage i.e. string internement.
-## Note, this does not use in-memory caching.
-## If that is wanted see the cacher class.
+## sqlite based phash storage.
 
 # # ## ### ##### ######## ############# #####################
 ## Requisites
