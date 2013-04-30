@@ -9,14 +9,14 @@ base API
 	getv:	key        --> value
 	names:	pattern?   --> list (keys)
 	set:	dict	   --> ()
-	setv:	key, value --> value
+	setv:	key value  --> value
 	size:	()   	   --> integer
 	unset:	key	   --> ()
 	unsetv:	pattern?   --> ()
 
 mtime API.
-	Extended persistent hash. Maintains
-	a last-modified timestamp per key.
+	Extended persistent hash. Maintains a last-modified timestamp
+	per key.
 	
 	clear:  ()	    	  --> ()
 	exists: key 	   	  --> boolean
@@ -26,10 +26,32 @@ mtime API.
 	getv:	key        	  --> value
 	names:	pattern?   	  --> list (keys)
 	set:	dict	   	  --> ()
-	setv:	key, value, time? --> value
+	setv:	key value time?   --> value
 	size:	()   	   	  --> integer
 	unset:	key	   	  --> ()
 	unsetv:	pattern?   	  --> ()
+
+multi API.
+	Extended persistent hash. Maintains multiple hashes per store,
+	using a 2-level key scheme, documents and fields.
+
+	The main API is operating on the totality of the store,
+	document independent.  An integrated backend in the main class
+	provides access to individual documents as separate base
+	instances, and the standard base API.
+
+	clear:  ()	      --> ()
+	exists: doc key	      --> boolean
+	get:	doc pattern?  --> list (values)
+	getv:	doc key       --> value
+	names:	doc pattern?  --> list (keys)
+	set:	doc dict      --> ()
+	setv:	doc key value --> value
+	size:	doc?   	      --> integer
+	unset:	doc key	      --> ()
+	unsetv:	doc pattern?  --> ()
+
+
 
 
 

@@ -1,0 +1,41 @@
+# -*- tcl -*- tcl.tk//DSL tcltest//EN//2.0 tcl.tk//DSL tcltest//EN//2.0
+## (c) 2013 Andreas Kupries
+# # ## ### ##### ######## ############# #####################
+## memory.test:  tests for the phash::multi::memory package.
+
+kt check Tcl     8.5
+kt check tcltest 2
+
+kt require support TclOO
+
+kt local   support phash
+kt local   support phash::multi
+kt local   testing phash::multi::memory
+
+# # ## ### ##### ######## ############# #####################
+
+proc already {cmd} {
+    return "can't create object \"$cmd\": command already exists with that name"
+}
+
+proc badmethod {m real} {
+    set real [string map {{, or} { or}} [linsert [join $real {, }] end-1 or]]
+    return "unknown method \"$m\": must be $real"
+}
+
+# identification to put into names of shared test cases.
+proc who {} { return multi/memory }
+
+# # ## ### ##### ######## ############# #####################
+## Two testsuites, for the custom (instantiation) and shared APIs.
+
+kt source multi-memory-setup.tcl
+
+# Test the multi-specific parts.
+#kt source multi-memory.testsuite
+
+# Test the per-document access using the existing testsuite
+kt source base.testsuite
+
+# # ## ### ##### ######## ############# #####################
+cleanupTests

@@ -2,7 +2,7 @@
 ## (c) 2013 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
 ## Base class for array storage i.e. Persistent HASH tables,
-## --> with last modified information per key.
+## --> Extended to maintain a last modified information per key.
 ## See also Tcllib 'tie'. We are using a compatible instance API.
 ##
 ## This class declares the API all actual classes have to
