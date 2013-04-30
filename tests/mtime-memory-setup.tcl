@@ -3,11 +3,11 @@
 # # ## ### ##### ######## ############# #####################
 
 proc new-store {} {
-    return [mphash::memory create mymphash]
+    return [phash::mtime::memory create mtime]
 }
 
 proc release-store {} {
-    mymphash destroy
+    mtime destroy
     return
 }
 

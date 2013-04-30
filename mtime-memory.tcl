@@ -1,27 +1,27 @@
 # -*- tcl -*-
 ## (c) 2013 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
-## In-memory mphash storage.
+## In-memory phash::mtime storage.
 
 # # ## ### ##### ######## ############# #####################
 ## Requisites
 
 package require Tcl 8.5
 package require TclOO
-package require mphash
+package require phash::mtime
 
 # # ## ### ##### ######## ############# #####################
 ## Implementation
 
-oo::class create mphash::memory {
-    superclass mphash
+oo::class create phash::mtime::memory {
+    superclass phash::mtime
 
     # # ## ### ##### ######## #############
     ## State
 
     variable mymap mytime
-    # mymap:  array (key -> value)
-    # mytime: array (key -> time)
+    # mymap:  array (key --> value)
+    # mytime: array (key --> mtime)
 
     # # ## ### ##### ######## #############
     ## Lifecycle.
@@ -31,56 +31,62 @@ oo::class create mphash::memory {
     # # ## ### ##### ######## #############
     ## API. Implementation of inherited virtual methods.
 
-    # get: () -> dict (values)
-    method get {} { array get mymap }
+    # get: () --> dict (key -> value)
+    method get {{pattern *}} { array get mymap $pattern }
 
-    # set: dict -> ()
-    method set {dict} { array set mymap $dict }
+    # set: dict --> ()
+    method set {dict} {
+	array set mymap $dict
+	return
+    }
 
-    # unset: (pattern?) -> ()
-    method unset {{pattern *}} { array unset mymap $pattern }
+    # unset: pattern? --> ()
+    method unset {{pattern *}} {
+	array unset mymap $pattern
+	return
+    }
 
-    # getv: (key) -> value
+    # getv: key --> value
     method getv {key} {
 	my Validate $key
 	return $mymap($key)
     }
 
-    # setv: (key, value) -> value
+    # setv: (key, value, time?) --> value
     method setv {key value {time {}}} {
 	if {[llength [info level 0]] < 5} {
 	    set time [clock seconds]
 	} else {
-	    # TODO: check time (epoch, integer!)
+	    my ValidateTime $time
 	}
 	set mytime($key) $time
 	set mymap($key)  $value
     }
 
-    # unsetv: (key) -> ()
+    # unsetv: key --> ()
     method unsetv {key} {
 	my Validate $key
 	unset mymap($key)
     }
 
-    # names () -> list(string)
-    method names {} { array names mymap }
+    # names: pattern? --> list(string)
+    method names {{pattern *}} { array names mymap $pattern }
 
-    # exists: string -> boolean
+    # exists: string --> boolean
     method exists {key} { info exists mymap($key) }
 
-    # size () -> integer
+    # size: () --> integer
     method size {} { array size mymap }
 
-    # clear () -> ()
+    # clear: () --> ()
     method clear {} { array unset mymap * }
 
     # # ## ### ##### ######## #############
 
-    # gett: () -> dict (mtimes)
-    method gett {} { array get mytime }
+    # gett: () --> dict (mtimes)
+    method gett {{pattern *}} { array get mytime $pattern }
 
-    # gettv: (key) -> mtime
+    # gettv: key --> mtime
     method gettv {key} {
 	my Validate $key
 	return $mytime($key)
@@ -98,5 +104,5 @@ oo::class create mphash::memory {
 }
 
 # # ## ### ##### ######## ############# #####################
-package provide mphash::memory 0
+package provide phash::mtime::memory 0
 return

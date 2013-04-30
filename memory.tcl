@@ -20,7 +20,7 @@ oo::class create phash::memory {
     ## State
 
     variable mymap
-    # mymap: array (key -> value)
+    # mymap: array (key --> value)
 
     # # ## ### ##### ######## #############
     ## Lifecycle.
@@ -30,48 +30,53 @@ oo::class create phash::memory {
     # # ## ### ##### ######## #############
     ## API. Implementation of inherited virtual methods.
 
-    # get: () -> dict
-    method get {} { array get mymap }
+    # get: pattern? --> dict
+    method get {{pattern *}} { array get mymap $pattern }
 
-    # set: dict -> ()
-    method set {dict} { array set mymap $dict }
+    # set: dict --> ()
+    method set {dict} {
+	array set mymap $dict
+	return
+    }
 
-    # unset: (pattern?) -> ()
-    method unset {{pattern *}} { array unset mymap $pattern }
+    # unset: pattern? --> ()
+    method unset {{pattern *}} {
+	array unset mymap $pattern
+	return    
+    }
 
-    # getv: (key) -> value
+    # getv: key --> value
     method getv {key} {
 	my Validate $key
 	return $mymap($key)
     }
 
-    # setv: (key, value) -> value
+    # setv: (key, value) --> value
     method setv {key value} { set mymap($key) $value }
 
-    # unsetv: (key) -> ()
+    # unsetv: (key) --> ()
     method unsetv {key} {
 	my Validate $key
 	unset mymap($key)
     }
 
-    # names () -> list(string)
-    method names {} { array names mymap }
+    # names: pattern? --> list(string)
+    method names {{pattern *}} { array names mymap $pattern }
 
-    # exists: string -> boolean
+    # exists: string --> boolean
     method exists {key} { info exists mymap($key) }
 
-    # size () -> integer
+    # size: () --> integer
     method size {} { array size mymap }
 
-    # clear () -> ()
+    # clear: () --> ()
     method clear {} { array unset mymap * }
 
     # # ## ### ##### ######## #############
 
     method Validate {key} {
 	if {[info exists mymap($key)]} return
-	my Error "Expected key, got \"$key\"" \
-	    BAD KEY $key
+	my Error "Expected key, got \"$key\"" BAD KEY $key
     }
 
     # # ## ### ##### ######## #############

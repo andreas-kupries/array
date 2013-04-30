@@ -21,16 +21,16 @@ oo::class create phash {
     # # ## ### ##### ######## #############
     ## API. Virtual methods. Implementation required.
 
-    # get: () -> dict
-    method get {} { my APIerror get }
+    # get: pattern? -> dict
+    method get {{pattern *}} { my APIerror get }
 
     # set: dict -> ()
     method set {dict} { my APIerror set }
 
-    # unset: (pattern?) -> ()
+    # unset: pattern? -> ()
     method unset {{pattern *}} { my APIerror unset }
 
-    # getv: (key) -> value
+    # getv: key -> value
     method getv {key} { my APIerror getv }
 
     # setv: (key, value) -> value
@@ -39,8 +39,8 @@ oo::class create phash {
     # unsetv: (key) -> ()
     method unsetv {key} { my APIerror unsetv }
 
-    # names () -> list(string)
-    method names {} { my APIerror names }
+    # names pattern? -> list(string)
+    method names {{pattern *}} { my APIerror names }
 
     # exists: key -> boolean
     method exists {key} { my APIerror exists }

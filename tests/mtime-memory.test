@@ -1,15 +1,15 @@
 # -*- tcl -*- tcl.tk//DSL tcltest//EN//2.0 tcl.tk//DSL tcltest//EN//2.0
 ## (c) 2013 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
-## memory.test:  tests for the mphash::memory package.
+## memory.test:  tests for the phash::mtime::memory package.
 
 kt check Tcl     8.5
 kt check tcltest 2
 
 kt require support TclOO
 
-kt local   support mphash
-kt local   testing mphash::memory
+kt local   support phash::mtime
+kt local   testing phash::mtime::memory
 
 # # ## ### ##### ######## ############# #####################
 
@@ -28,10 +28,10 @@ proc who {} { return memory }
 # # ## ### ##### ######## ############# #####################
 ## Two testsuites, for the custom (instantiation) and shared APIs.
 
-kt source mmemory-setup.tcl
+kt source mtime-memory-setup.tcl
 
-kt source mmemory.testsuite
-kt source mphash.testsuite
+kt source mtime-memory.testsuite
+kt source mtime.testsuite
 
 # # ## ### ##### ######## ############# #####################
 cleanupTests

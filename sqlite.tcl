@@ -25,7 +25,8 @@ oo::class create phash::sqlite {
 
     variable mytable \
 	sql_get	sql_setv sql_unset sql_clear \
-	sql_getv sql_unsetv sql_names sql_size
+	sql_getv sql_unsetv sql_names sql_size \
+	sql_getall sql_namesall
     # Name of the database table used for storage
     # plus the sql commands to access it.
 
@@ -44,14 +45,20 @@ oo::class create phash::sqlite {
     # # ## ### ##### ######## #############
     ## API. Implementation of inherited virtual methods.
 
-    # get: () -> dict
-    method get {} {
-	DB transaction {
-	    DB eval $sql_get
+    # get: pattern? --> dict
+    method get {{pattern *}} {
+	if {$pattern eq "*"} {
+	    DB transaction {
+		DB eval $sql_getall
+	    }
+	} else {
+	    DB transaction {
+		DB eval $sql_get
+	    }
 	}
     }
 
-    # set: dict -> ()
+    # set: dict --> ()
     method set {dict} {
 	DB transaction {
 	    dict for {key value} $dict {
@@ -60,7 +67,7 @@ oo::class create phash::sqlite {
 	}
     }
 
-    # unset: (pattern?) -> ()
+    # unset: pattern? --> ()
     method unset {{pattern *}} {
 	if {$pattern eq "*"} {
 	    DB transaction {
@@ -73,7 +80,7 @@ oo::class create phash::sqlite {
 	}
     }
 
-    # getv: (key) -> value
+    # getv: key --> value
     method getv {key} {
 	DB transaction {
 	    if {![DB exists $sql_getv]} {
@@ -84,7 +91,7 @@ oo::class create phash::sqlite {
 	}
     }
 
-    # setv: (key, value) -> value
+    # setv: (key, value) --> value
     method setv {key value} {
 	DB transaction {
 	    DB eval $sql_setv
@@ -92,7 +99,7 @@ oo::class create phash::sqlite {
 	return $value
     }
 
-    # unsetv: (key) -> ()
+    # unsetv: key --> ()
     method unsetv {key} {
 	DB transaction {
 	    if {![DB exists $sql_getv]} {
@@ -103,40 +110,38 @@ oo::class create phash::sqlite {
 	}
     }
 
-    # names () -> list(string)
-    method names {} {
-	DB transaction {
-	    DB eval $sql_names
+    # names: pattern? --> list(string)
+    method names {{pattern *}} {
+	if {$pattern eq "*"} {
+	    DB transaction {
+		DB eval $sql_namesall
+	    }
+	} else {
+	    DB transaction {
+		DB eval $sql_names
+	    }
 	}
     }
 
-    # exists: string -> boolean
+    # exists: string --> boolean
     method exists {key} {
 	DB transaction {
 	    DB exists $sql_getv
 	}
     }
 
-    # size () -> integer
+    # size: () --> integer
     method size {} { 
 	DB transaction {
 	    DB eval $sql_size
 	}
     }
 
-    # clear () -> ()
+    # clear: () --> ()
     method clear {} {
 	DB transaction {
 	    DB eval $sql_clear
 	}
-    }
-
-    # # ## ### ##### ######## #############
-
-    method Validate {key} {
-	if {[info exists mymap($key)]} return
-	my Error "Expected key, got \"$key\"" \
-	    BAD KEY $key
     }
 
     # # ## ### ##### ######## #############
@@ -149,7 +154,7 @@ oo::class create phash::sqlite {
 
 	if {![dbutil initialize-schema $fqndb reason $table {{
 	    key   TEXT PRIMARY KEY,
-	    value TEXT NOT NULL UNIQUE
+	    value TEXT NOT NULL
 	} {
 	    {key   TEXT 0 {} 1}
 	    {value TEXT 1 {} 0}
@@ -158,14 +163,16 @@ oo::class create phash::sqlite {
 	}
 
 	# Generate the custom sql commands.
-	my Def sql_get    { SELECT key, value FROM "<<table>>" }
-	my Def sql_getv   { SELECT value      FROM "<<table>>" WHERE key = :key }
-	my Def sql_names  { SELECT key        FROM "<<table>>" }
-	my Def sql_size   { SELECT count(*)   FROM "<<table>>" }
-	my Def sql_setv   { INSERT OR REPLACE INTO "<<table>>" VALUES (:key, :value) }
-	my Def sql_clear  { DELETE            FROM "<<table>>" }
-	my Def sql_unset  { DELETE            FROM "<<table>>" WHERE key GLOB :pattern }
-	my Def sql_unsetv { DELETE            FROM "<<table>>" WHERE key = :key }
+	my Def sql_get      { SELECT key, value FROM "<<table>>" WHERE key GLOB :pattern }
+	my Def sql_getall   { SELECT key, value FROM "<<table>>" }
+	my Def sql_getv     { SELECT value      FROM "<<table>>" WHERE key = :key }
+	my Def sql_names    { SELECT key        FROM "<<table>>" WHERE key GLOB :pattern }
+	my Def sql_namesall { SELECT key        FROM "<<table>>" }
+	my Def sql_size     { SELECT count(*)   FROM "<<table>>" }
+	my Def sql_setv     { INSERT OR REPLACE INTO "<<table>>" VALUES (:key, :value) }
+	my Def sql_clear    { DELETE            FROM "<<table>>" }
+	my Def sql_unset    { DELETE            FROM "<<table>>" WHERE key GLOB :pattern }
+	my Def sql_unsetv   { DELETE            FROM "<<table>>" WHERE key = :key }
 	return
     }
 

@@ -33,7 +33,7 @@ proc who {} { return sqlite/file }
 kt source sqlite-setup-file.tcl
 
 kt source sqlite.testsuite
-kt source phash.testsuite
+kt source base.testsuite
 
 # # ## ### ##### ######## ############# #####################
 cleanupTests

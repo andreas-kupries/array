@@ -31,7 +31,7 @@ proc who {} { return memory }
 kt source memory-setup.tcl
 
 kt source memory.testsuite
-kt source phash.testsuite
+kt source base.testsuite
 
 # # ## ### ##### ######## ############# #####################
 cleanupTests

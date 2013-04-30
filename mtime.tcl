@@ -18,64 +18,69 @@ package require TclOO
 # # ## ### ##### ######## ############# #####################
 ## Implementation
 
-oo::class create mphash {
+oo::class create phash::mtime {
     # # ## ### ##### ######## #############
     ## API. Virtual methods. Implementation required.
 
-    # get: () -> dict (values only)
-    method get {} { my APIerror get }
+    # get: pattern? --> dict (key -> value)
+    method get {{pattern *}} { my APIerror get }
 
-    # set: dict -> ()
+    # set: dict --> ()
     method set {dict} { my APIerror set }
 
-    # unset: (pattern?) -> ()
+    # unset: pattern? --> ()
     method unset {{pattern *}} { my APIerror unset }
 
-    # getv: (key) -> value
+    # getv: key --> value
     method getv {key} { my APIerror getv }
 
-    # setv: (key, value) -> value
+    # setv: (key, value, time?) --> value
     method setv {key value {time {}}} { my APIerror setv }
 
-    # unsetv: (key) -> ()
+    # unsetv: key --> ()
     method unsetv {key} { my APIerror unsetv }
 
-    # names () -> list(string)
-    method names {} { my APIerror names }
+    # names: pattern? --> list(key)
+    method names {{pattern *}} { my APIerror names }
 
-    # exists: key -> boolean
+    # exists: key --> boolean
     method exists {key} { my APIerror exists }
 
-    # size () -> integer
+    # size: () --> integer
     method size {} { my APIerror size }
 
-    # clear () -> ()
+    # clear: () --> ()
     method clear {} { my APIerror clear }
 
     # # ## ### ##### ######## #############
     ## Additional acessors to query last modified information, bulk
     ## and for individual keys.
 
-    # get: () -> dict (mtimes only)
+    # gett: () --> dict (key -> mtime)
     method gett {} { my APIerror gett }
 
-    # gettv: (key) -> mtime
+    # gettv: key --> mtime
     method gettv {key} { my APIerror gettv }
 
     # # ## ### ##### ######## #############
     ## Internal helpers
 
     method Error {text args} {
-	return -code error -errorcode [list MPHASH {*}$args] $text
+	return -code error -errorcode [list PHASH MTIME {*}$args] $text
     }
 
     method APIerror {api} {
 	my Error "Unimplemented API $api" API MISSING $api
     }
 
+    method ValidateTime {t} {
+	if {[string is integer -strict $t]} return
+	my Error "Expected a time, got \"$t\"" PHASH MTIME BAD TIME $t
+    }
+
     # # ## ### ##### ######## #############
 }
 
 # # ## ### ##### ######## ############# #####################
-package provide mphash 0
+package provide phash::mtime 0
 return

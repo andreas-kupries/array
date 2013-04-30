@@ -1,15 +1,49 @@
 Usable by Tcllib's tie package.
 
+base API
+	Simple persistent hash. Tcl array.
+
+	clear:  ()	   --> ()
+	exists: key 	   --> boolean
+	get:	pattern?   --> list (values)
+	getv:	key        --> value
+	names:	pattern?   --> list (keys)
+	set:	dict	   --> ()
+	setv:	key, value --> value
+	size:	()   	   --> integer
+	unset:	key	   --> ()
+	unsetv:	pattern?   --> ()
+
+mtime API.
+	Extended persistent hash. Maintains
+	a last-modified timestamp per key.
+	
+	clear:  ()	    	  --> ()
+	exists: key 	   	  --> boolean
+	get:	pattern?   	  --> list (values)
+	gett:	pattern?   	  --> list (mtime)
+	gettv:	key	   	  --> mtime
+	getv:	key        	  --> value
+	names:	pattern?   	  --> list (keys)
+	set:	dict	   	  --> ()
+	setv:	key, value, time? --> value
+	size:	()   	   	  --> integer
+	unset:	key	   	  --> ()
+	unsetv:	pattern?   	  --> ()
+
+
+
+
 phash - Simple persistent hash
 	key --> value
 
-mphash - Extended phash storing mtime per key
+phash::mtime - Extended phash storing mtime per key
 	key -> (mtime, value)
 
 kphash - multiple independent phashes in a single store.
 	(docid, key) --> value
 
-mkphash - Extend kphash, multiple independent mphashes in a single store.
+mkphash - Extend kphash, multiple independent phash::mtime in a single store.
 
 	(docid, key) --> (value, mtime)
 
