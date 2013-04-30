@@ -31,10 +31,8 @@ proc who {} { return multi/memory }
 
 kt source multi-memory-setup.tcl
 
-# Test the multi-specific parts.
 #kt source multi-memory.testsuite
-
-# Test the per-document access using the existing testsuite
+kt source multi.testsuite
 kt source base.testsuite
 
 # # ## ### ##### ######## ############# #####################

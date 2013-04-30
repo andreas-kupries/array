@@ -46,12 +46,6 @@ oo::class create phash::multi::sqlite {
     # # ## ### ##### ######## #############
     ## API. Implementation of inherited virtual methods.
 
-    method _open {doc} {
-	# Nothing to do
-	return
-    }
-
-
     # get: pattern? --> dict
     method _get {doc {pattern *}} {
 	if {$pattern eq "*"} {
@@ -156,12 +150,12 @@ oo::class create phash::multi::sqlite {
     #
     ## Global API for overall (document independent access).
 
-    # get: pattern? --> (dict doc --> list (value))
+    # get: pattern? --> (dict (key --> (doc --> value)))
     method get {{pattern *}} {
 	set r {}
 	DB transaction {
 	    DB eval $sql_gget {
-		dict lappend r $doc $value
+		dict set r $key $doc $value
 	    }
 	}
 	return $r
@@ -181,7 +175,7 @@ oo::class create phash::multi::sqlite {
 	return
     }
 
-    # getv: key --> (dict doc --> list (value))
+    # getv: key --> (dict (doc --> value))
     method getv {key} {
 	set r {}
 	DB transaction {
@@ -263,11 +257,11 @@ oo::class create phash::multi::sqlite {
 	my Def sql_unsetv   { DELETE            FROM "<<table>>" WHERE doc = :doc AND key = :key }
 
 	# More sql commands. Operations across partitions.
-	my Def sql_gget      { SELECT doc, value FROM "<<table>>" WHERE key GLOB :pattern }
+	my Def sql_gget      { SELECT doc, key, value FROM "<<table>>" WHERE key GLOB :pattern }
 	my Def sql_ggetv     { SELECT doc, value FROM "<<table>>" WHERE key = :key }
-	my Def sql_gnames    { SELECT UNIQUE key FROM "<<table>>" WHERE key GLOB :pattern }
-	my Def sql_gnamesall { SELECT UNIQUE key FROM "<<table>>" }
-	my Def sql_gsize     { SELECT count(*)   FROM (SELECT UNIQUE doc FROM "<<table>>") }
+	my Def sql_gnames    { SELECT DISTINCT key FROM "<<table>>" WHERE key GLOB :pattern }
+	my Def sql_gnamesall { SELECT DISTINCT key FROM "<<table>>" }
+	my Def sql_gsize     { SELECT count(*)   FROM (SELECT DISTINCT doc FROM "<<table>>") }
 	my Def sql_gclear    { DELETE            FROM "<<table>>" }
 	my Def sql_gunset    { DELETE            FROM "<<table>>" WHERE key GLOB :pattern }
 	my Def sql_gunsetv   { DELETE            FROM "<<table>>" WHERE key = :key }

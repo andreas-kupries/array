@@ -31,30 +31,30 @@ oo::class create phash::multi::memory {
     ## API. Implementation of inherited virtual methods.
     ##      Access to individual documents.
 
-    method _open {doc} {
-	if {[dict exists $mymap $doc]} return
-	dict set mymap $doc {}
-	return
-    }
-
     # get: pattern? --> dict
     method _get {doc {pattern *}} {
+	if {![dict exists $mymap $doc]} {return {}}
 	dict filter [dict get $mymap $doc] key $pattern
     }
 
     # set: dict --> ()
     method _set {doc dict} {
-	set mymap [dict replace $mymap $doc \
-		       [dict merge \
-			    [dict get $mymap $doc] \
-			    $dict]]
+	if {![dict exists $mymap $doc]} {
+	    dict set mymap $doc $dict
+	} else {
+	    set mymap [dict replace $mymap $doc \
+			   [dict merge \
+				[dict get $mymap $doc] \
+				$dict]]
+	}
 	return
     }
 
     # unset: pattern? --> ()
     method _unset {doc {pattern *}} {
+	if {![dict exists $mymap $doc]} return
 	if {$pattern eq "*"} {
-	    dict set mymap $doc {}
+	    dict unset mymap $doc
 	} else {
 	    foreach k [dict keys [dict get $mymap $doc] $pattern] {
 		dict unset mymap $doc $k
@@ -84,22 +84,26 @@ oo::class create phash::multi::memory {
 
     # names: pattern? --> list(string)
     method _names {doc {pattern *}} {
+	if {![dict exists $mymap $doc]} {return {}}
 	dict keys [dict get $mymap $doc] $pattern
     }
 
     # exists: key --> boolean
     method _exists {doc key} {
+	if {![dict exists $mymap $doc]} {return 0}
 	dict exists $mymap $doc $key
     }
 
     # size: () --> integer
     method _size {doc} {
+	if {![dict exists $mymap $doc]} {return 0}
 	dict size [dict get $mymap $doc]
     }
 
     # clear: () --> ()
     method _clear {doc} {
-	dict set mymap $doc {}
+	if {![dict exists $mymap $doc]} return
+	dict unset mymap $doc
 	return
     }
 
@@ -108,12 +112,12 @@ oo::class create phash::multi::memory {
     #
     ## Global API for overall (document independent access).
 
-    # get: pattern? --> (dict doc --> list (value))
+    # get: pattern? --> (dict (key --> (doc --> value)))
     method get {{pattern *}} {
 	set r {}
 	dict for {doc partition} $mymap {
 	    foreach k [dict keys $partition $pattern] {
-		dict lappend r $k [dict get $partition $k]
+		dict set r $k $doc [dict get $partition $k]
 	    }
 	}
 	return $r
@@ -130,12 +134,12 @@ oo::class create phash::multi::memory {
 	return
     }
 
-    # getv: key --> (dict doc --> list (value))
+    # getv: key --> (dict (doc --> value))
     method getv {key} {
 	set r {}
 	dict for {doc partition} $mymap {
 	    if {![dict exists $partition $key]} continue
-	    dict lappend r $key [dict get $partition $key]
+	    dict set r $doc [dict get $partition $key]
 	}
 	return $r
     }
@@ -160,7 +164,7 @@ oo::class create phash::multi::memory {
     }
 
     # size: () --> integer
-    method size {} { dict size mymap }
+    method size {} { dict size $mymap }
 
     # clear: () --> ()
     method clear {} { set mymap {} ; return }

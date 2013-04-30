@@ -38,7 +38,7 @@ oo::class create phash::multi {
     # open: () --> ()
     method _open {doc} { my APIerror _open }
 
-    # get: pattern? --> dict
+    # get: pattern? --> dict (key --> value)
     method _get {doc {pattern *}} { my APIerror _get }
 
     # set: dict --> ()
@@ -73,13 +73,13 @@ oo::class create phash::multi {
     #
     ## Global API for overall (document independent access).
 
-    # get: pattern? --> (dict doc --> list (value))
+    # get: pattern? --> (dict (key --> (doc --> value)))
     method get {{pattern *}} { my APIerror get }
 
     # unset: pattern? --> ()
     method unset {{pattern *}} { my APIerror unset }
 
-    # getv: key --> (dict doc --> list (value))
+    # getv: key --> (dict (doc --> value))
     method getv {key} { my APIerror getv }
 
     # unsetv: key --> ()
@@ -132,8 +132,6 @@ oo::class create phash::multi::Doc {
 	oo::objdefine [self] forward size   $mymulti _size   $doc
 	oo::objdefine [self] forward unset  $mymulti _unset  $doc
 	oo::objdefine [self] forward unsetv $mymulti _unsetv $doc
-
-	$mymulti _open $doc
 	return
     }
 }

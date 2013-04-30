@@ -33,10 +33,8 @@ proc who {} { return multi/sqlite/file }
 
 kt source multi-sqlite-setup-file.tcl
 
-# Test the multi-specific parts.
 #kt source multi-sqlite.testsuite
-
-# Test the per-document access using the existing testsuite
+kt source multi.testsuite
 kt source base.testsuite
 
 # # ## ### ##### ######## ############# #####################

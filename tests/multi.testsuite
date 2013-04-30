@@ -1,0 +1,360 @@
+## -*- tcl -*-
+## (c) 2013 Andreas Kupries
+# # ## ### ##### ######## ############# #####################
+## Test suite for phash::multi stores, common parts across implementations.
+## Part II, cross-document operations. The per-document operations can be
+## be tested via base.testsuite and a document instance opened from the multi.
+#
+## The external procedures 'already' and 'badmethod' are used to
+## generate implementation specific error messages. Implementations
+## have to be provided by the invoking implementation-specific
+## testsuite.
+#
+## The external procedures 'new-store' and 'release-store' are used to
+## create and destroy an instance of the store under test.
+
+# ------------*----------------
+# dispatch    | *
+# destroy     | *
+# ------------*----------------
+# clear       | *
+# get         | *
+# getv        | *
+# names       | *
+# size        | *
+# unset       | *
+# unsetv      | *
+# ------------*----------------
+
+# # ## ### ##### ######## ############# #####################
+## dispatch
+
+test phash::multi::[who]-dispatch-1.0 {instance, no method} -setup {
+    new-store
+} -body {
+    mymulti
+} -cleanup {
+    release-store
+} -returnCodes error \
+    -result {wrong # args: should be "mymulti method ?arg ...?"}
+
+test phash::multi::[who]-dispatch-1.1 {instance, bad method name} -setup {
+    new-store
+} -body {
+    mymulti foo
+} -cleanup {
+    release-store
+} -returnCodes error \
+    -result [badmethod foo {clear destroy get getv names open size unset unsetv}]
+
+# # ## ### ##### ######## ############# #####################
+## destructor
+
+test phash::multi::[who]-destroy-1.0 {destroy, wrong#args, too many} -setup {
+    new-store
+} -body {
+    mymulti destroy X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymulti destroy"}
+
+test phash::multi::[who]-destroy-1.1 {destroy} -setup {
+    new-store
+} -body {
+    release-store
+    info commands ::mymulti
+} -result {}
+
+
+# # ## ### ##### ######## ############# #####################
+## clear - Across documents
+
+test phash::multi::[who]-clear-1.0 {clear, wrong#args, too many} -setup {
+    new-store
+} -body {
+    mymulti clear S
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymulti clear"}
+
+test phash::multi::[who]-clear-1.1 {clear, none} -setup {
+    new-store
+} -body {
+    list [mymulti size] [mymulti clear] [mymulti size]
+} -cleanup {
+    release-store
+} -result {0 {} 0}
+
+test phash::multi::[who]-clear-1.2 {clear, some} -setup {
+    new-store
+    myphash setv S C
+    myphash setv A R
+    myphash setv R A
+    myphash setv C S
+} -body {
+    list [mymulti size] [mymulti clear] [mymulti size]
+} -cleanup {
+    release-store
+} -result {1 {} 0}
+
+# # ## ### ##### ######## ############# #####################
+## get - Across documents.
+
+test phash::multi::[who]-get-1.0 {get, wrong#args, too many} -setup {
+    new-store
+} -body {
+    mymulti get P X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymulti get ?pattern?"}
+
+test phash::multi::[who]-get-1.1 {get, nothing} -setup {
+    new-store
+} -body {
+    mymulti get
+} -cleanup {
+    release-store
+} -result {}
+
+test phash::multi::[who]-get-1.2 {get, all} -setup {
+    new-store
+    myphash setv S C
+    myphash setv A R
+    myphash setv R A
+    myphash setv C S
+    mydoc   setv S U
+    mydoc   setv O Z
+    mydoc   setv R Y
+    mydoc   setv A X
+} -body {
+    dict2sort [mymulti get]
+} -cleanup {
+    release-store
+} -result {A {ABC R XYZ X} C {ABC S} O {XYZ Z} R {ABC A XYZ Y} S {ABC C XYZ U}}
+
+test phash::multi::[who]-get-1.3 {get, some} -setup {
+    new-store
+    myphash setv S C
+    myphash setv A R
+    myphash setv R A
+    myphash setv C S
+    mydoc   setv S U
+    mydoc   setv O Z
+    mydoc   setv R Y
+    mydoc   setv A X
+} -body {
+    dict2sort [mymulti get {[AR]}]
+} -cleanup {
+    release-store
+} -result {A {ABC R XYZ X} R {ABC A XYZ Y}}
+
+# # ## ### ##### ######## ############# #####################
+## getv - Across documents
+
+test phash::multi::[who]-getv-1.0 {getv, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    mymulti getv
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymulti getv key"}
+
+test phash::multi::[who]-getv-1.1 {getv, wrong#args, too many} -setup {
+    new-store
+} -body {
+    mymulti getv S X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymulti getv key"}
+
+test phash::multi::[who]-getv-1.2 {getv, unknown key} -setup {
+    new-store
+} -body {
+    mymulti getv 0
+} -cleanup {
+    release-store
+} -result {}
+
+test phash::multi::[who]-getv-1.3 {getv, known, everywhere} -setup {
+    new-store
+    myphash setv S S
+    mydoc   setv S A
+} -body {
+    kt dictsort [mymulti getv S]
+} -cleanup {
+    release-store
+} -result {ABC S XYZ A}
+
+test phash::multi::[who]-getv-1.4 {getv, known, partial} -setup {
+    new-store
+    myphash setv S C
+    myphash setv A R
+    myphash setv R A
+    myphash setv C S
+    mydoc   setv S A
+} -body {
+    mymulti getv A
+} -cleanup {
+    release-store
+} -result {ABC R}
+
+
+# # ## ### ##### ######## ############# #####################
+## names - Across documents
+
+test phash::multi::[who]-names-1.0 {names, wrong#args, too many} -setup {
+    new-store
+} -body {
+    mymulti names S X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymulti names ?pattern?"}
+
+test phash::multi::[who]-names-1.1 {names, none} -setup {
+    new-store
+} -body {
+    mymulti names
+} -cleanup {
+    release-store
+} -result {}
+
+test phash::multi::[who]-names-1.2 {names, all} -setup {
+    new-store
+    myphash setv S C
+    myphash setv A R
+    myphash setv R A
+    myphash setv C S
+
+    mydoc   setv S U
+    mydoc   setv O Z
+    mydoc   setv R Y
+    mydoc   setv A X
+} -body {
+    lsort -dict [mymulti names]
+} -cleanup {
+    release-store
+} -result {A C O R S}
+
+test phash::multi::[who]-names-1.3 {names, some} -setup {
+    new-store
+    myphash setv S C
+    myphash setv A R
+    myphash setv R A
+    myphash setv C S
+
+    mydoc   setv S U
+    mydoc   setv O Z
+    mydoc   setv R Y
+    mydoc   setv A X
+} -body {
+    lsort -dict [mymulti names {[AR]}]
+} -cleanup {
+    release-store
+} -result {A R}
+
+# # ## ### ##### ######## ############# #####################
+## size - documents
+
+test phash::multi::[who]-size-1.0 {size, wrong#args, too many} -setup {
+    new-store
+} -body {
+    mymulti size X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymulti size"}
+
+test phash::multi::[who]-size-1.1 {size} -setup {
+    new-store
+    myphash setv A B
+} -body {
+    mymulti size
+} -cleanup {
+    release-store
+} -result 1
+
+test phash::multi::[who]-size-1.2 {size} -setup {
+    new-store
+    myphash setv A B
+    mydoc   setv B C
+} -body {
+    mymulti size
+} -cleanup {
+    release-store
+} -result 2
+
+# # ## ### ##### ######## ############# #####################
+## unset - Across documents
+
+test phash::multi::[who]-unset-1.0 {unset, wrong#args, too many} -setup {
+    new-store
+} -body {
+    mymulti unset P X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymulti unset ?pattern?"}
+
+test phash::multi::[who]-unset-1.1 {unset, partial} -setup {
+    new-store
+    myphash set {A B AX Z C R}
+    mydoc   set {A Z D Q}
+} -body {
+    mymulti unset A*
+    dict2sort [mymulti get]
+} -cleanup {
+    release-store
+} -result {C {ABC R} D {XYZ Q}}
+
+test phash::multi::[who]-unset-1.2 {unset, all} -setup {
+    new-store
+    myphash set {A B AX Z C R}
+    mydoc   set {A Z D Q}
+} -body {
+    mymulti unset
+    mymulti get
+} -cleanup {
+    release-store
+} -result {}
+
+# # ## ### ##### ######## ############# #####################
+## unsetv
+
+test phash::multi::[who]-unsetv-1.0 {unsetv, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    mymulti unsetv
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymulti unsetv key"}
+
+test phash::multi::[who]-unsetv-1.1 {unsetv, wrong#args, too many} -setup {
+    new-store
+} -body {
+    mymulti unsetv K X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "mymulti unsetv key"}
+
+test phash::multi::[who]-unsetv-1.2 {unsetv, known} -setup {
+    new-store
+    myphash set {A B AX Z C R}
+    mydoc   set {A Z D Q}
+} -body {
+    mymulti unsetv A
+    dict2sort [mymulti get]
+} -cleanup {
+    release-store
+} -result {AX {ABC Z} C {ABC R} D {XYZ Q}}
+
+test phash::multi::[who]-unsetv-1.3 {unsetv, unknown} -setup {
+    new-store
+    myphash set {A B AX Z C R}
+    mydoc   set {A Z D Q}
+} -body {
+    mymulti unsetv B
+    dict2sort [mymulti get]
+} -cleanup {
+    release-store
+} -result {A {ABC B XYZ Z} AX {ABC Z} C {ABC R} D {XYZ Q}}
+
+# # ## ### ##### ######## ############# #####################
+return
