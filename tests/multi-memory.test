@@ -31,7 +31,7 @@ proc who {} { return multi/memory }
 
 kt source multi-memory-setup.tcl
 
-#kt source multi-memory.testsuite
+kt source multi-memory.testsuite
 kt source multi.testsuite
 kt source base.testsuite
 

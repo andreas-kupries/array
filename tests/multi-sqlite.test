@@ -33,7 +33,7 @@ proc who {} { return multi/sqlite }
 
 kt source multi-sqlite-setup.tcl
 
-#kt source multi-sqlite.testsuite
+kt source multi-sqlite.testsuite
 kt source multi.testsuite
 kt source base.testsuite
 
