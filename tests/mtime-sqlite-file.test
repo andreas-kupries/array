@@ -30,10 +30,10 @@ proc who {} { return sqlite/file }
 # # ## ### ##### ######## ############# #####################
 ## Two testsuites, for the custom (instantiation) and shared APIs.
 
-kt source mtime-sqlite-setup-file.tcl
+kt source support/setup-mtime-sqlite-file.tcl
 
-kt source mtime-sqlite.testsuite
-kt source mtime.testsuite
+kt source parts/mtime-sqlite.testsuite
+kt source parts/mtime.testsuite
 
 # # ## ### ##### ######## ############# #####################
 cleanupTests

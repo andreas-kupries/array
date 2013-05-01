@@ -28,10 +28,10 @@ proc who {} { return memory }
 # # ## ### ##### ######## ############# #####################
 ## Two testsuites, for the custom (instantiation) and shared APIs.
 
-kt source memory-setup.tcl
+kt source support/setup-memory.tcl
 
-kt source memory.testsuite
-kt source base.testsuite
+kt source parts/memory.testsuite
+kt source parts/base.testsuite
 
 # # ## ### ##### ######## ############# #####################
 cleanupTests

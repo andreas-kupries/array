@@ -30,10 +30,10 @@ proc who {} { return sqlite/file }
 # # ## ### ##### ######## ############# #####################
 ## Two testsuites, for the custom (instantiation) and shared APIs.
 
-kt source sqlite-setup-file.tcl
+kt source support/setup-sqlite-file.tcl
 
-kt source sqlite.testsuite
-kt source base.testsuite
+kt source parts/sqlite.testsuite
+kt source parts/base.testsuite
 
 # # ## ### ##### ######## ############# #####################
 cleanupTests

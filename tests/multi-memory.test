@@ -29,11 +29,12 @@ proc who {} { return multi/memory }
 # # ## ### ##### ######## ############# #####################
 ## Two testsuites, for the custom (instantiation) and shared APIs.
 
-kt source multi-memory-setup.tcl
+kt source support/setup-multi-memory.tcl
+kt source support/common-multi.tcl
 
-kt source multi-memory.testsuite
-kt source multi.testsuite
-kt source base.testsuite
+kt source parts/multi-memory.testsuite
+kt source parts/multi.testsuite
+kt source parts/base.testsuite
 
 # # ## ### ##### ######## ############# #####################
 cleanupTests

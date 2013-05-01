@@ -1,19 +1,15 @@
 ## -*- tcl -*-
 ## (c) 2013 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
-kt source multi-support.tcl
 
 proc new-store {} {
-    phash::multi::memory create mymulti
-    rename [mymulti open ABC] myphash
-    rename [mymulti open XYZ] mydoc
-    return myphash
+    sqlite3 mydb :memory:
+    return [phash::sqlite create myphash ::mydb phash]
 }
 
 proc release-store {} {
-    myphash destroy
-    mydoc   destroy
-    mymulti destroy
+    catch { myphash destroy }
+    catch { mydb    close   }
     return
 }
 

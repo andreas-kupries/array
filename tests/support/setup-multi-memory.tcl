@@ -3,13 +3,16 @@
 # # ## ### ##### ######## ############# #####################
 
 proc new-store {} {
-    sqlite3 mydb :memory:
-    return [phash::sqlite create myphash ::mydb phash]
+    phash::multi::memory create mymulti
+    rename [mymulti open ABC] myphash
+    rename [mymulti open XYZ] mydoc
+    return myphash
 }
 
 proc release-store {} {
-    catch { myphash destroy }
-    catch { mydb    close }
+    myphash destroy
+    mydoc   destroy
+    mymulti destroy
     return
 }
 
