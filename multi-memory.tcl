@@ -154,7 +154,10 @@ oo::class create phash::multi::memory {
     }
 
     # names: pattern? --> list(string)
-    method names {{pattern *}} {
+    method names {{pattern *}} { dict keys $mymap $pattern }
+
+    # keys: pattern? --> list(string)
+    method keys {{pattern *}} {
 	set r {}
 	dict for {doc partition} $mymap {
 	    lappend r {*}[dict keys $partition $pattern]

@@ -88,6 +88,9 @@ oo::class create phash::multi {
     # names: pattern? --> list(string)
     method names {{pattern *}} { my APIerror names }
 
+    # keys: pattern? --> list(string)
+    method keys {{pattern *}} { my APIerror keys }
+
     # size: () --> integer
     method size {} { my APIerror size }
 

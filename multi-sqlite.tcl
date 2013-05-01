@@ -27,7 +27,7 @@ oo::class create phash::multi::sqlite {
 	sql_getall sql_namesall sql_gclear \
 	sql_gget sql_ggetv sql_gnames \
 	sql_gnamesall sql_gsize sql_gunset \
-	sql_gunsetv
+	sql_gunsetv sql_gkeysall sql_gkeys
     # Name of the database table used for storage
     # plus the sql commands to access it.
 
@@ -207,6 +207,19 @@ oo::class create phash::multi::sqlite {
 	}
     }
 
+    # keys: pattern? --> list(string)
+    method keys {{pattern *}} {
+	if {$pattern eq ""} {
+	    DB transaction {
+		DB eval $sql_gkeysall
+	    }
+	} else {
+	    DB transaction {
+		DB eval $sql_gkeys
+	    }
+	}
+    }
+
     # size: () --> integer
     method size {} {
 	DB transaction {
@@ -258,13 +271,15 @@ oo::class create phash::multi::sqlite {
 
 	# More sql commands. Operations across partitions.
 	my Def sql_gget      { SELECT doc, key, value FROM "<<table>>" WHERE key GLOB :pattern }
-	my Def sql_ggetv     { SELECT doc, value FROM "<<table>>" WHERE key = :key }
-	my Def sql_gnames    { SELECT DISTINCT key FROM "<<table>>" WHERE key GLOB :pattern }
-	my Def sql_gnamesall { SELECT DISTINCT key FROM "<<table>>" }
-	my Def sql_gsize     { SELECT count(*)   FROM (SELECT DISTINCT doc FROM "<<table>>") }
-	my Def sql_gclear    { DELETE            FROM "<<table>>" }
-	my Def sql_gunset    { DELETE            FROM "<<table>>" WHERE key GLOB :pattern }
-	my Def sql_gunsetv   { DELETE            FROM "<<table>>" WHERE key = :key }
+	my Def sql_ggetv     { SELECT doc, value      FROM "<<table>>" WHERE key = :key }
+	my Def sql_gkeys     { SELECT DISTINCT key    FROM "<<table>>" WHERE key GLOB :pattern }
+	my Def sql_gkeysall  { SELECT DISTINCT key    FROM "<<table>>" }
+	my Def sql_gnames    { SELECT DISTINCT doc    FROM "<<table>>" WHERE doc GLOB :pattern }
+	my Def sql_gnamesall { SELECT DISTINCT doc    FROM "<<table>>" }
+	my Def sql_gsize     { SELECT count(*)        FROM (SELECT DISTINCT doc FROM "<<table>>") }
+	my Def sql_gclear    { DELETE                 FROM "<<table>>" }
+	my Def sql_gunset    { DELETE                 FROM "<<table>>" WHERE key GLOB :pattern }
+	my Def sql_gunsetv   { DELETE                 FROM "<<table>>" WHERE key = :key }
 	return
     }
 
