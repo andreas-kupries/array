@@ -8,71 +8,71 @@
 ## have to be provided by the invoking implementation-specific
 ## testsuite.
 #
-## The external procedures 'new-store' and 'release-store' are used to
-## create and destroy aqn instance of the store under test.
+## The external procedure 'test-class' provides the class name for use
+## in test case labels, and messages. 'store-class' for construction.
 
 # # ## ### ##### ######## ############# #####################
 
-test phash-sqlite-1.0 {new, wrong#args, not enough} -body {
-    phash::sqlite new
-} -returnCodes error -result {wrong # args: should be "phash::sqlite new database table"}
+test [test-class]-specific-1.0 {new, wrong#args, not enough} -body {
+    [store-class] new
+} -returnCodes error -result "wrong # args: should be \"[store-class] new database table\""
 
-test phash-sqlite-1.1 {new, wrong#args, not enough} -body {
-    phash::sqlite new D
-} -returnCodes error -result {wrong # args: should be "phash::sqlite new database table"}
+test [test-class]-specific-1.1 {new, wrong#args, not enough} -body {
+    [store-class] new D
+} -returnCodes error -result "wrong # args: should be \"[store-class] new database table\""
 
-test phash-sqlite-1.2 {new, wrong#args, too many} -body {
-    phash::sqlite new D T X
-} -returnCodes error -result {wrong # args: should be "phash::sqlite new database table"}
+test [test-class]-specific-1.2 {new, wrong#args, too many} -body {
+    [store-class] new D T X
+} -returnCodes error -result "wrong # args: should be \"[store-class] new database table\""
 
-test phash-sqlite-1.3 {create, wrong#args, not enough} -body {
-    phash::sqlite create foo
-} -returnCodes error -result {wrong # args: should be "phash::sqlite create foo database table"}
+test [test-class]-specific-1.3 {create, wrong#args, not enough} -body {
+    [store-class] create foo
+} -returnCodes error -result "wrong # args: should be \"[store-class] create foo database table\""
 
-test phash-sqlite-1.4 {create, wrong#args, not enough} -body {
-    phash::sqlite create foo D
-} -returnCodes error -result {wrong # args: should be "phash::sqlite create foo database table"}
+test [test-class]-specific-1.4 {create, wrong#args, not enough} -body {
+    [store-class] create foo D
+} -returnCodes error -result "wrong # args: should be \"[store-class] create foo database table\""
 
-test phash-sqlite-1.5 {create, wrong#args, too many} -body {
-    phash::sqlite create foo D T X
-} -returnCodes error -result {wrong # args: should be "phash::sqlite create foo database table"}
+test [test-class]-specific-1.5 {create, wrong#args, too many} -body {
+    [store-class] create foo D T X
+} -returnCodes error -result "wrong # args: should be \"[store-class] create foo database table\""
 
-test phash-sqlite-1.6 {constructor, create, existing command} -setup {
+test [test-class]-specific-1.6 {constructor, create, existing command} -setup {
     sqlite3 DB :memory:
-    phash::sqlite create myasqlite DB foo
+    [store-class] create sqlite-test-store DB foo
 } -body {
-    phash::sqlite create myasqlite DB foo
+    [store-class] create sqlite-test-store DB foo
 } -cleanup {
-    myasqlite destroy
+    sqlite-test-store destroy
     DB close
-} -returnCodes error -result [already myasqlite]
+} -returnCodes error -result [already sqlite-test-store]
 
-test phash-sqlite-1.7 {constructor, create, existing command} -setup {
+test [test-class]-specific-1.7 {constructor, create, existing command} -setup {
     sqlite3 DB :memory:
 } -body {
-    phash::sqlite create set DB foo
+    [store-class] create set DB foo
 } -cleanup {
     DB close
 } -returnCodes error -result [already set]
 
-test phash-sqlite-1.8 {constructor, create} -setup {
+test [test-class]-specific-1.8 {constructor, create} -setup {
     set result {}
     sqlite3 DB :memory:
 } -body {
-    lappend result [phash::sqlite create myasqlite DB foo]
-    lappend result [info commands ::myasqlite]
-    lappend result [myasqlite size]
+    lappend result [[store-class] create sqlite-test-store DB foo]
+    lappend result [info commands ::sqlite-test-store]
+    lappend result [sqlite-test-store size]
 } -cleanup {
-    myasqlite destroy
+    sqlite-test-store destroy
     DB close
     unset result
-} -result {::myasqlite ::myasqlite 0}
+} -result {::sqlite-test-store ::sqlite-test-store 0}
 
-test phash-sqlite-1.9 {constructor, new} -setup {
+test [test-class]-specific-1.9 {constructor, new} -setup {
     set result {}
     sqlite3 DB :memory:
 } -body {
-    lappend result [set foo [phash::sqlite new DB foo]]
+    lappend result [set foo [[store-class] new DB foo]]
     lappend result [info commands ::$foo]
     lappend result [$foo size]
 } -cleanup {

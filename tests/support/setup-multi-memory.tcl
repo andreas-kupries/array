@@ -3,10 +3,10 @@
 # # ## ### ##### ######## ############# #####################
 
 proc new-store {} {
-    phash::multi::memory create mymulti
+    [test-class] create mymulti
     rename [mymulti open ABC] myphash
     rename [mymulti open XYZ] mydoc
-    return myphash
+    return
 }
 
 proc release-store {} {

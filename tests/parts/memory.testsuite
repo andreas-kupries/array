@@ -1,53 +1,55 @@
 ## -*- tcl -*-
 ## (c) 2013 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
-## Test suite for memory stores, custom parts.
+## Test suite for memory stores, life-cycle, class specific.
+## Suitable for base-, mtime-, and multi-derived stores
+## (Identical (de)constructor APIs).
 #
 ## The external procedures 'already' and 'badmethod' are used to
 ## generate implementation specific error messages. Implementations
 ## have to be provided by the invoking implementation-specific
 ## testsuite.
 #
-## The external procedures 'new-store' and 'release-store' are used to
-## create and destroy aqn instance of the store under test.
+## The external procedure 'test-class' provides the class name for use
+## in test case labels, messages, and construction.
 
 # # ## ### ##### ######## ############# #####################
 
-test phash-memory-1.0 {new, wrong#args, too many} -body {
-    phash::memory new X
-} -returnCodes error -result {wrong # args: should be "phash::memory new"}
+test [test-class]-specific-1.0 {new, wrong#args, too many} -body {
+    [test-class] new X
+} -returnCodes error -result "wrong # args: should be \"[test-class] new\""
 
-test phash-memory-1.1 {create, wrong#args, too many} -body {
-    phash::memory create foo X
-} -returnCodes error -result {wrong # args: should be "phash::memory create foo"}
+test [test-class]-specific-1.1 {create, wrong#args, too many} -body {
+    [test-class] create mem-test-store X
+} -returnCodes error -result "wrong # args: should be \"[test-class] create mem-test-store\""
 
-test phash-memory-1.2 {constructor, create, existing command} -setup {
-    phash::memory create myphmem
+test [test-class]-specific-1.2 {constructor, create, existing command} -setup {
+    [test-class] create mem-test-store
 } -body {
-    phash::memory create myphmem
+    [test-class] create mem-test-store
 } -cleanup {
-    myphmem destroy
-} -returnCodes error -result [already myphmem]
+    mem-test-store destroy
+} -returnCodes error -result [already mem-test-store]
 
-test phash-memory-1.3 {constructor, create, existing command} -body {
-    phash::memory create set
+test [test-class]-specific-1.3 {constructor, create, existing command} -body {
+    [test-class] create set
 } -returnCodes error -result [already set]
 
-test phash-memory-1.4 {constructor, create} -setup {
+test [test-class]-specific-1.4 {constructor, create} -setup {
     set result {}
 } -body {
-    lappend result [phash::memory create myphmem]
-    lappend result [info commands ::myphmem]
-    lappend result [myphmem size]
+    lappend result [[test-class] create mem-test-store]
+    lappend result [info commands ::mem-test-store]
+    lappend result [mem-test-store size]
 } -cleanup {
-    myphmem destroy
+    mem-test-store destroy
     unset result
-} -result {::myphmem ::myphmem 0}
+} -result {::mem-test-store ::mem-test-store 0}
 
-test phash-memory-1.5 {constructor, new} -setup {
+test [test-class]-specific-1.5 {constructor, new} -setup {
     set result {}
 } -body {
-    lappend result [set foo [phash::memory new]]
+    lappend result [set foo [[test-class] new]]
     lappend result [info commands ::$foo]
     lappend result [$foo size]
 } -cleanup {

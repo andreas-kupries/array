@@ -30,7 +30,7 @@
 # # ## ### ##### ######## ############# #####################
 ## dispatch
 
-test phash::multi::[who]-dispatch-1.0 {instance, no method} -setup {
+test [test-class]-dispatch-1.0 {instance, no method} -setup {
     new-store
 } -body {
     mymulti
@@ -39,7 +39,7 @@ test phash::multi::[who]-dispatch-1.0 {instance, no method} -setup {
 } -returnCodes error \
     -result {wrong # args: should be "mymulti method ?arg ...?"}
 
-test phash::multi::[who]-dispatch-1.1 {instance, bad method name} -setup {
+test [test-class]-dispatch-1.1 {instance, bad method name} -setup {
     new-store
 } -body {
     mymulti foo
@@ -51,7 +51,7 @@ test phash::multi::[who]-dispatch-1.1 {instance, bad method name} -setup {
 # # ## ### ##### ######## ############# #####################
 ## destructor
 
-test phash::multi::[who]-destroy-1.0 {destroy, wrong#args, too many} -setup {
+test [test-class]-destroy-1.0 {destroy, wrong#args, too many} -setup {
     new-store
 } -body {
     mymulti destroy X
@@ -59,7 +59,7 @@ test phash::multi::[who]-destroy-1.0 {destroy, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "mymulti destroy"}
 
-test phash::multi::[who]-destroy-1.1 {destroy} -setup {
+test [test-class]-destroy-1.1 {destroy} -setup {
     new-store
 } -body {
     release-store
@@ -70,7 +70,7 @@ test phash::multi::[who]-destroy-1.1 {destroy} -setup {
 # # ## ### ##### ######## ############# #####################
 ## clear - Across documents
 
-test phash::multi::[who]-clear-1.0 {clear, wrong#args, too many} -setup {
+test [test-class]-clear-1.0 {clear, wrong#args, too many} -setup {
     new-store
 } -body {
     mymulti clear S
@@ -78,7 +78,7 @@ test phash::multi::[who]-clear-1.0 {clear, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "mymulti clear"}
 
-test phash::multi::[who]-clear-1.1 {clear, none} -setup {
+test [test-class]-clear-1.1 {clear, none} -setup {
     new-store
 } -body {
     list [mymulti size] [mymulti clear] [mymulti size]
@@ -86,7 +86,7 @@ test phash::multi::[who]-clear-1.1 {clear, none} -setup {
     release-store
 } -result {0 {} 0}
 
-test phash::multi::[who]-clear-1.2 {clear, some} -setup {
+test [test-class]-clear-1.2 {clear, some} -setup {
     new-store
     myphash setv S C
     myphash setv A R
@@ -101,7 +101,7 @@ test phash::multi::[who]-clear-1.2 {clear, some} -setup {
 # # ## ### ##### ######## ############# #####################
 ## get - Across documents.
 
-test phash::multi::[who]-get-1.0 {get, wrong#args, too many} -setup {
+test [test-class]-get-1.0 {get, wrong#args, too many} -setup {
     new-store
 } -body {
     mymulti get P X
@@ -109,7 +109,7 @@ test phash::multi::[who]-get-1.0 {get, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "mymulti get ?pattern?"}
 
-test phash::multi::[who]-get-1.1 {get, nothing} -setup {
+test [test-class]-get-1.1 {get, nothing} -setup {
     new-store
 } -body {
     mymulti get
@@ -117,7 +117,7 @@ test phash::multi::[who]-get-1.1 {get, nothing} -setup {
     release-store
 } -result {}
 
-test phash::multi::[who]-get-1.2 {get, all} -setup {
+test [test-class]-get-1.2 {get, all} -setup {
     new-store
     myphash setv S C
     myphash setv A R
@@ -133,7 +133,7 @@ test phash::multi::[who]-get-1.2 {get, all} -setup {
     release-store
 } -result {A {ABC R XYZ X} C {ABC S} O {XYZ Z} R {ABC A XYZ Y} S {ABC C XYZ U}}
 
-test phash::multi::[who]-get-1.3 {get, some} -setup {
+test [test-class]-get-1.3 {get, some} -setup {
     new-store
     myphash setv S C
     myphash setv A R
@@ -152,7 +152,7 @@ test phash::multi::[who]-get-1.3 {get, some} -setup {
 # # ## ### ##### ######## ############# #####################
 ## getv - Across documents
 
-test phash::multi::[who]-getv-1.0 {getv, wrong#args, not enough} -setup {
+test [test-class]-getv-1.0 {getv, wrong#args, not enough} -setup {
     new-store
 } -body {
     mymulti getv
@@ -160,7 +160,7 @@ test phash::multi::[who]-getv-1.0 {getv, wrong#args, not enough} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "mymulti getv key"}
 
-test phash::multi::[who]-getv-1.1 {getv, wrong#args, too many} -setup {
+test [test-class]-getv-1.1 {getv, wrong#args, too many} -setup {
     new-store
 } -body {
     mymulti getv S X
@@ -168,7 +168,7 @@ test phash::multi::[who]-getv-1.1 {getv, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "mymulti getv key"}
 
-test phash::multi::[who]-getv-1.2 {getv, unknown key} -setup {
+test [test-class]-getv-1.2 {getv, unknown key} -setup {
     new-store
 } -body {
     mymulti getv 0
@@ -176,7 +176,7 @@ test phash::multi::[who]-getv-1.2 {getv, unknown key} -setup {
     release-store
 } -result {}
 
-test phash::multi::[who]-getv-1.3 {getv, known, everywhere} -setup {
+test [test-class]-getv-1.3 {getv, known, everywhere} -setup {
     new-store
     myphash setv S S
     mydoc   setv S A
@@ -186,7 +186,7 @@ test phash::multi::[who]-getv-1.3 {getv, known, everywhere} -setup {
     release-store
 } -result {ABC S XYZ A}
 
-test phash::multi::[who]-getv-1.4 {getv, known, partial} -setup {
+test [test-class]-getv-1.4 {getv, known, partial} -setup {
     new-store
     myphash setv S C
     myphash setv A R
@@ -202,7 +202,7 @@ test phash::multi::[who]-getv-1.4 {getv, known, partial} -setup {
 # # ## ### ##### ######## ############# #####################
 ## keys - Across documents
 
-test phash::multi::[who]-keys-1.0 {keys, wrong#args, too many} -setup {
+test [test-class]-keys-1.0 {keys, wrong#args, too many} -setup {
     new-store
 } -body {
     mymulti keys S X
@@ -210,7 +210,7 @@ test phash::multi::[who]-keys-1.0 {keys, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "mymulti keys ?pattern?"}
 
-test phash::multi::[who]-keys-1.1 {keys, none} -setup {
+test [test-class]-keys-1.1 {keys, none} -setup {
     new-store
 } -body {
     mymulti keys
@@ -218,7 +218,7 @@ test phash::multi::[who]-keys-1.1 {keys, none} -setup {
     release-store
 } -result {}
 
-test phash::multi::[who]-keys-1.2 {keys, all} -setup {
+test [test-class]-keys-1.2 {keys, all} -setup {
     new-store
     myphash setv S C
     myphash setv A R
@@ -235,7 +235,7 @@ test phash::multi::[who]-keys-1.2 {keys, all} -setup {
     release-store
 } -result {A C O R S}
 
-test phash::multi::[who]-keys-1.3 {keys, some} -setup {
+test [test-class]-keys-1.3 {keys, some} -setup {
     new-store
     myphash setv S C
     myphash setv A R
@@ -255,7 +255,7 @@ test phash::multi::[who]-keys-1.3 {keys, some} -setup {
 # # ## ### ##### ######## ############# #####################
 ## names - documents
 
-test phash::multi::[who]-names-1.0 {names, wrong#args, too many} -setup {
+test [test-class]-names-1.0 {names, wrong#args, too many} -setup {
     new-store
 } -body {
     mymulti names S X
@@ -263,7 +263,7 @@ test phash::multi::[who]-names-1.0 {names, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "mymulti names ?pattern?"}
 
-test phash::multi::[who]-names-1.1 {names, none} -setup {
+test [test-class]-names-1.1 {names, none} -setup {
     new-store
 } -body {
     mymulti names
@@ -271,7 +271,7 @@ test phash::multi::[who]-names-1.1 {names, none} -setup {
     release-store
 } -result {}
 
-test phash::multi::[who]-names-1.2 {names, all} -setup {
+test [test-class]-names-1.2 {names, all} -setup {
     new-store
     myphash setv S C
     mydoc   setv S U
@@ -281,7 +281,7 @@ test phash::multi::[who]-names-1.2 {names, all} -setup {
     release-store
 } -result {ABC XYZ}
 
-test phash::multi::[who]-names-1.3 {names, some} -setup {
+test [test-class]-names-1.3 {names, some} -setup {
     new-store
     myphash setv S C
     mydoc   setv S U
@@ -294,7 +294,7 @@ test phash::multi::[who]-names-1.3 {names, some} -setup {
 # # ## ### ##### ######## ############# #####################
 ## size - documents
 
-test phash::multi::[who]-size-1.0 {size, wrong#args, too many} -setup {
+test [test-class]-size-1.0 {size, wrong#args, too many} -setup {
     new-store
 } -body {
     mymulti size X
@@ -302,7 +302,7 @@ test phash::multi::[who]-size-1.0 {size, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "mymulti size"}
 
-test phash::multi::[who]-size-1.1 {size} -setup {
+test [test-class]-size-1.1 {size} -setup {
     new-store
     myphash setv A B
 } -body {
@@ -311,7 +311,7 @@ test phash::multi::[who]-size-1.1 {size} -setup {
     release-store
 } -result 1
 
-test phash::multi::[who]-size-1.2 {size} -setup {
+test [test-class]-size-1.2 {size} -setup {
     new-store
     myphash setv A B
     mydoc   setv B C
@@ -324,7 +324,7 @@ test phash::multi::[who]-size-1.2 {size} -setup {
 # # ## ### ##### ######## ############# #####################
 ## unset - Across documents
 
-test phash::multi::[who]-unset-1.0 {unset, wrong#args, too many} -setup {
+test [test-class]-unset-1.0 {unset, wrong#args, too many} -setup {
     new-store
 } -body {
     mymulti unset P X
@@ -332,7 +332,7 @@ test phash::multi::[who]-unset-1.0 {unset, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "mymulti unset ?pattern?"}
 
-test phash::multi::[who]-unset-1.1 {unset, partial} -setup {
+test [test-class]-unset-1.1 {unset, partial} -setup {
     new-store
     myphash set {A B AX Z C R}
     mydoc   set {A Z D Q}
@@ -343,7 +343,7 @@ test phash::multi::[who]-unset-1.1 {unset, partial} -setup {
     release-store
 } -result {C {ABC R} D {XYZ Q}}
 
-test phash::multi::[who]-unset-1.2 {unset, all} -setup {
+test [test-class]-unset-1.2 {unset, all} -setup {
     new-store
     myphash set {A B AX Z C R}
     mydoc   set {A Z D Q}
@@ -357,7 +357,7 @@ test phash::multi::[who]-unset-1.2 {unset, all} -setup {
 # # ## ### ##### ######## ############# #####################
 ## unsetv
 
-test phash::multi::[who]-unsetv-1.0 {unsetv, wrong#args, not enough} -setup {
+test [test-class]-unsetv-1.0 {unsetv, wrong#args, not enough} -setup {
     new-store
 } -body {
     mymulti unsetv
@@ -365,7 +365,7 @@ test phash::multi::[who]-unsetv-1.0 {unsetv, wrong#args, not enough} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "mymulti unsetv key"}
 
-test phash::multi::[who]-unsetv-1.1 {unsetv, wrong#args, too many} -setup {
+test [test-class]-unsetv-1.1 {unsetv, wrong#args, too many} -setup {
     new-store
 } -body {
     mymulti unsetv K X
@@ -373,7 +373,7 @@ test phash::multi::[who]-unsetv-1.1 {unsetv, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "mymulti unsetv key"}
 
-test phash::multi::[who]-unsetv-1.2 {unsetv, known} -setup {
+test [test-class]-unsetv-1.2 {unsetv, known} -setup {
     new-store
     myphash set {A B AX Z C R}
     mydoc   set {A Z D Q}
@@ -384,7 +384,7 @@ test phash::multi::[who]-unsetv-1.2 {unsetv, known} -setup {
     release-store
 } -result {AX {ABC Z} C {ABC R} D {XYZ Q}}
 
-test phash::multi::[who]-unsetv-1.3 {unsetv, unknown} -setup {
+test [test-class]-unsetv-1.3 {unsetv, unknown} -setup {
     new-store
     myphash set {A B AX Z C R}
     mydoc   set {A Z D Q}

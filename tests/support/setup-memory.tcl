@@ -3,7 +3,8 @@
 # # ## ### ##### ######## ############# #####################
 
 proc new-store {} {
-    return [phash::memory create myphash]
+    [test-class] create myphash
+    return
 }
 
 proc release-store {} {

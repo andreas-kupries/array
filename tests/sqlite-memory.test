@@ -14,23 +14,15 @@ kt local   support phash
 kt local   testing phash::sqlite
 
 # # ## ### ##### ######## ############# #####################
+## Identify the class under test, for the suites containing the common
+## and shared test cases.
 
-proc already {cmd} {
-    return "can't create object \"$cmd\": command already exists with that name"
-}
+proc test-class {} { return phash::sqlite/memory }
 
-proc badmethod {m real} {
-    set real [string map {{, or} { or}} [linsert [join $real {, }] end-1 or]]
-    return "unknown method \"$m\": must be $real"
-}
-
-# identification to put into names of shared test cases.
-proc who {} { return sqlite }
+kt source support/common.tcl
+kt source support/setup-sqlite-memory.tcl
 
 # # ## ### ##### ######## ############# #####################
-## Two testsuites, for the custom (instantiation) and shared APIs.
-
-kt source support/setup-sqlite-memory.tcl
 
 kt source parts/sqlite.testsuite
 kt source parts/base.testsuite

@@ -11,208 +11,57 @@
 ## The external procedures 'new-store' and 'release-store' are used to
 ## create and destroy an instance of the store under test.
 
-# ------------*----------------
-# dispatch    | *
-# destroy     | *
-# ------------*----------------
-# clear       | *
-# exists      | *
-# get         | *
-# gett        | *
-# gettv       | *
-# getv        | *
-# names       | *
-# set         | *
-# setv        | *
-# size        | *
-# unset       | *
-# unsetv      | *
-# ------------*----------------
-
 # # ## ### ##### ######## ############# #####################
 ## dispatch
 
-test phash::mtime::[who]-dispatch-1.0 {instance, no method} -setup {
+test [test-class]-dispatch-1.1 {instance, bad method name} -setup {
     new-store
 } -body {
-    mtime
-} -cleanup {
-    release-store
-} -returnCodes error \
-    -result {wrong # args: should be "mtime method ?arg ...?"}
-
-test phash::mtime::[who]-dispatch-1.1 {instance, bad method name} -setup {
-    new-store
-} -body {
-    mtime foo
+    myphash foo
 } -cleanup {
     release-store
 } -returnCodes error \
     -result [badmethod foo {clear destroy exists get gett gettv getv names set setv size unset unsetv}]
 
 # # ## ### ##### ######## ############# #####################
-## destructor
-
-test phash::mtime::[who]-destroy-1.0 {destroy, wrong#args, too many} -setup {
-    new-store
-} -body {
-    mtime destroy X
-} -cleanup {
-    release-store
-} -returnCodes error -result {wrong # args: should be "mtime destroy"}
-
-test phash::mtime::[who]-destroy-1.1 {destroy} -setup {
-    new-store
-} -body {
-    release-store
-    info commands ::mtime
-} -result {}
-
-# # ## ### ##### ######## ############# #####################
-## clear
-
-test phash::mtime::[who]-clear-1.0 {clear, wrong#args, too many} -setup {
-    new-store
-} -body {
-    mtime clear S
-} -cleanup {
-    release-store
-} -returnCodes error -result {wrong # args: should be "mtime clear"}
-
-test phash::mtime::[who]-clear-1.1 {clear, none} -setup {
-    new-store
-} -body {
-    list [mtime size] [mtime clear] [mtime size]
-} -cleanup {
-    release-store
-} -result {0 {} 0}
-
-test phash::mtime::[who]-clear-1.2 {clear, some} -setup {
-    new-store
-    mtime setv S C
-    mtime setv A R
-    mtime setv R A
-    mtime setv C S
-} -body {
-    list [mtime size] [mtime clear] [mtime size]
-} -cleanup {
-    release-store
-} -result {4 {} 0}
-
-# # ## ### ##### ######## ############# #####################
-## exists
-
-test phash::mtime::[who]-exists-1.0 {exists, wrong#args, not enough} -setup {
-    new-store
-} -body {
-    mtime exists
-} -cleanup {
-    release-store
-} -returnCodes error -result {wrong # args: should be "mtime exists key"}
-
-test phash::mtime::[who]-exists-1.1 {exists, wrong#args, too many} -setup {
-    new-store
-} -body {
-    mtime exists S X
-} -cleanup {
-    release-store
-} -returnCodes error -result {wrong # args: should be "mtime exists key"}
-
-test phash::mtime::[who]-exists-1.2 {exists, no} -setup {
-    new-store
-} -body {
-    mtime exists S
-} -cleanup {
-    release-store
-} -result 0
-
-test phash::mtime::[who]-exists-1.3 {exists, yes} -setup {
-    new-store
-    mtime setv S A
-} -body {
-    mtime exists S
-} -cleanup {
-    release-store
-} -result 1
-
-# # ## ### ##### ######## ############# #####################
-## get
-
-test phash::mtime::[who]-get-1.0 {get, wrong#args, too many} -setup {
-    new-store
-} -body {
-    mtime get P X
-} -cleanup {
-    release-store
-} -returnCodes error -result {wrong # args: should be "mtime get ?pattern?"}
-
-test phash::mtime::[who]-get-1.1 {get, nothing} -setup {
-    new-store
-} -body {
-    mtime get
-} -cleanup {
-    release-store
-} -result {}
-
-test phash::mtime::[who]-get-1.2 {get, all} -setup {
-    new-store
-} -body {
-    mtime get
-} -cleanup {
-    release-store
-} -result {}
-
-test phash::mtime::[who]-get-1.3 {get, some} -setup {
-    new-store
-    mtime setv S C
-    mtime setv A R
-    mtime setv R A
-    mtime setv C S
-} -body {
-    kt dictsort [mtime get {[AR]}]
-} -cleanup {
-    release-store
-} -result {A R R A}
-
-# # ## ### ##### ######## ############# #####################
 ## gett
 
-test phash::mtime::[who]-gett-1.0 {gett, wrong#args, too many} -setup {
+test [test-class]-gett-1.0 {gett, wrong#args, too many} -setup {
     new-store
 } -body {
-    mtime gett P X
+    myphash gett P X
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "mtime gett ?pattern?"}
+} -returnCodes error -result {wrong # args: should be "myphash gett ?pattern?"}
 
-test phash::mtime::[who]-gett-1.1 {gett, nothing} -setup {
+test [test-class]-gett-1.1 {gett, nothing} -setup {
     new-store
 } -body {
-    mtime gett
+    myphash gett
 } -cleanup {
     release-store
 } -result {}
 
-test phash::mtime::[who]-gett-1.2 {gett, all} -setup {
+test [test-class]-gett-1.2 {gett, all} -setup {
     new-store
-    mtime setv S C 3
-    mtime setv A R 4
-    mtime setv R A 5
-    mtime setv C S 6
+    myphash setv S C 3
+    myphash setv A R 4
+    myphash setv R A 5
+    myphash setv C S 6
 } -body {
-    kt dictsort [mtime gett]
+    kt dictsort [myphash gett]
 } -cleanup {
     release-store
 } -result {A 4 C 6 R 5 S 3}
 
-test phash::mtime::[who]-gett-1.3 {gett, some} -setup {
+test [test-class]-gett-1.3 {gett, some} -setup {
     new-store
-    mtime setv S C 3
-    mtime setv A R 4
-    mtime setv R A 5
-    mtime setv C S 6
+    myphash setv S C 3
+    myphash setv A R 4
+    myphash setv R A 5
+    myphash setv C S 6
 } -body {
-    kt dictsort [mtime gett {[AR]}]
+    kt dictsort [myphash gett {[AR]}]
 } -cleanup {
     release-store
 } -result {A 4 R 5}
@@ -220,344 +69,99 @@ test phash::mtime::[who]-gett-1.3 {gett, some} -setup {
 # # ## ### ##### ######## ############# #####################
 ## gettv
 
-test phash::mtime::[who]-gettv-1.0 {gettv, wrong#args, not enough} -setup {
+test [test-class]-gettv-1.0 {gettv, wrong#args, not enough} -setup {
     new-store
 } -body {
-    mtime gettv
+    myphash gettv
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "mtime gettv key"}
+} -returnCodes error -result {wrong # args: should be "myphash gettv key"}
 
-test phash::mtime::[who]-gettv-1.1 {gettv, wrong#args, too many} -setup {
+test [test-class]-gettv-1.1 {gettv, wrong#args, too many} -setup {
     new-store
 } -body {
-    mtime gettv S X
+    myphash gettv S X
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "mtime gettv key"}
+} -returnCodes error -result {wrong # args: should be "myphash gettv key"}
 
-test phash::mtime::[who]-gettv-1.2 {gettv, unknown key} -setup {
+test [test-class]-gettv-1.2 {gettv, unknown key} -setup {
     new-store
 } -body {
-    mtime gettv 0
+    myphash gettv 0
 } -cleanup {
     release-store
 } -returnCodes error -result {Expected key, got "0"}
 
-test phash::mtime::[who]-gettv-1.3 {gettv, known} -setup {
+test [test-class]-gettv-1.3 {gettv, known} -setup {
     new-store
-    mtime setv S S 7
+    myphash setv S S 7
 } -body {
-    mtime gettv S
+    myphash gettv S
 } -cleanup {
     release-store
 } -result 7
 
-test phash::mtime::[who]-gettv-1.4 {gettv, known} -setup {
+test [test-class]-gettv-1.4 {gettv, known} -setup {
     new-store
-    mtime setv S C 3
-    mtime setv A R 6
-    mtime setv R A 9
-    mtime setv C S 0
+    myphash setv S C 3
+    myphash setv A R 6
+    myphash setv R A 9
+    myphash setv C S 0
 } -body {
-    mtime gettv A
+    myphash gettv A
 } -cleanup {
     release-store
 } -result 6
 
 # # ## ### ##### ######## ############# #####################
-## getv
-
-test phash::mtime::[who]-getv-1.0 {getv, wrong#args, not enough} -setup {
-    new-store
-} -body {
-    mtime getv
-} -cleanup {
-    release-store
-} -returnCodes error -result {wrong # args: should be "mtime getv key"}
-
-test phash::mtime::[who]-getv-1.1 {getv, wrong#args, too many} -setup {
-    new-store
-} -body {
-    mtime getv S X
-} -cleanup {
-    release-store
-} -returnCodes error -result {wrong # args: should be "mtime getv key"}
-
-test phash::mtime::[who]-getv-1.2 {getv, unknown key} -setup {
-    new-store
-} -body {
-    mtime getv 0
-} -cleanup {
-    release-store
-} -returnCodes error -result {Expected key, got "0"}
-
-test phash::mtime::[who]-getv-1.3 {getv, known} -setup {
-    new-store
-    mtime setv S S
-} -body {
-    mtime getv S
-} -cleanup {
-    release-store
-} -result S
-
-test phash::mtime::[who]-getv-1.4 {getv, known} -setup {
-    new-store
-    mtime setv S C
-    mtime setv A R
-    mtime setv R A
-    mtime setv C S
-} -body {
-    mtime getv A
-} -cleanup {
-    release-store
-} -result R
-
-# # ## ### ##### ######## ############# #####################
-## names
-
-test phash::mtime::[who]-names-1.0 {names, wrong#args, too many} -setup {
-    new-store
-} -body {
-    mtime names P X
-} -cleanup {
-    release-store
-} -returnCodes error -result {wrong # args: should be "mtime names ?pattern?"}
-
-test phash::mtime::[who]-names-1.1 {names, none} -setup {
-    new-store
-} -body {
-    mtime names
-} -cleanup {
-    release-store
-} -result {}
-
-test phash::mtime::[who]-names-1.2 {names, all} -setup {
-    new-store
-    mtime setv S C
-    mtime setv A R
-    mtime setv R A
-    mtime setv C S
-} -body {
-    lsort -dict [mtime names]
-} -cleanup {
-    release-store
-} -result {A C R S}
-
-test phash::mtime::[who]-names-1.3 {names, some} -setup {
-    new-store
-    mtime setv S C
-    mtime setv A R
-    mtime setv R A
-    mtime setv C S
-} -body {
-    lsort -dict [mtime names {[AR]}]
-} -cleanup {
-    release-store
-} -result {A R}
-
-# # ## ### ##### ######## ############# #####################
-## set
-
-test phash::mtime::[who]-set-1.0 {set, wrong#args, not enough} -setup {
-    new-store
-} -body {
-    mtime set
-} -cleanup {
-    release-store
-} -returnCodes error -result {wrong # args: should be "mtime set dict"}
-
-test phash::mtime::[who]-set-1.1 {set, wrong#args, too many} -setup {
-    new-store
-} -body {
-    mtime set D X
-} -cleanup {
-    release-store
-} -returnCodes error -result {wrong # args: should be "mtime set dict"}
-
-test phash::mtime::[who]-set-1.2 {set} -setup {
-    new-store
-} -body {
-    list [mtime set {A B X Z C R}] [kt dictsort [mtime get]]
-} -cleanup {
-    release-store
-} -result {{} {A B C R X Z}}
-
-# # ## ### ##### ######## ############# #####################
 ## setv
 
-test phash::mtime::[who]-setv-1.0 {setv, wrong#args, not enough} -setup {
+test [test-class]-setv-1.0 {setv, wrong#args, not enough} -setup {
     new-store
 } -body {
-    mtime setv
+    myphash setv
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "mtime setv key value ?time?"}
+} -returnCodes error -result {wrong # args: should be "myphash setv key value ?time?"}
 
-test phash::mtime::[who]-setv-1.1 {setv, wrong#args, not enough} -setup {
+test [test-class]-setv-1.1 {setv, wrong#args, not enough} -setup {
     new-store
 } -body {
-    mtime setv K
+    myphash setv K
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "mtime setv key value ?time?"}
+} -returnCodes error -result {wrong # args: should be "myphash setv key value ?time?"}
 
-test phash::mtime::[who]-setv-1.2 {setv, wrong#args, too many} -setup {
+test [test-class]-setv-1.2 {setv, wrong#args, too many} -setup {
     new-store
 } -body {
-    mtime setv K V T X
+    myphash setv K V T X
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "mtime setv key value ?time?"}
+} -returnCodes error -result {wrong # args: should be "myphash setv key value ?time?"}
 
-test phash::mtime::[who]-setv-1.3 {setv} -setup {
-    new-store
-} -body {
-    mtime setv A B
-} -cleanup {
-    release-store
-} -result B
-
-test phash::mtime::[who]-setv-1.4 {setv, default time} -setup {
+test [test-class]-setv-1.5 {setv, explicit time} -setup {
     new-store
     set n [clock seconds]
 } -body {
-    mtime setv A B
-    expr {([mtime gettv A] - $n) <= 1}
-    # Note. In principle it is possible for the second to advance
-    # beteen the queries in -setup and inside of setv. The looser
-    # condition helps here. It should not advance by more than a
-    # single second, except on extremely slow systems.
-} -cleanup {
-    release-store
-} -result 1
-
-test phash::mtime::[who]-setv-1.5 {setv, explicit time} -setup {
-    new-store
-    set n [clock seconds]
-} -body {
-    mtime setv A B 5
-    mtime gettv A
+    myphash setv A B 5
+    myphash gettv A
 } -cleanup {
     release-store
 } -result 5
 
-test phash::mtime::[who]-setv-1.6 {setv, bad time} -setup {
+test [test-class]-setv-1.6 {setv, bad time} -setup {
     new-store
 } -body {
-    mtime setv A B C
+    myphash setv A B C
 } -cleanup {
     release-store
 } -returnCodes error -result {Expected a time, got "C"}
 
 # # ## ### ##### ######## ############# #####################
-## size
 
-test phash::mtime::[who]-size-1.0 {size, wrong#args, too many} -setup {
-    new-store
-} -body {
-    mtime size X
-} -cleanup {
-    release-store
-} -returnCodes error -result {wrong # args: should be "mtime size"}
-
-test phash::mtime::[who]-size-1.1 {size} -setup {
-    new-store
-    mtime setv A B
-} -body {
-    mtime size
-} -cleanup {
-    release-store
-} -result 1
-
-test phash::mtime::[who]-size-1.2 {size} -setup {
-    new-store
-    mtime setv A B
-    mtime setv B C
-} -body {
-    mtime size
-} -cleanup {
-    release-store
-} -result 2
-
-# # ## ### ##### ######## ############# #####################
-## unset
-
-test phash::mtime::[who]-unset-1.0 {unset, wrong#args, too many} -setup {
-    new-store
-} -body {
-    mtime unset P X
-} -cleanup {
-    release-store
-} -returnCodes error -result {wrong # args: should be "mtime unset ?pattern?"}
-
-test phash::mtime::[who]-unset-1.1 {unset, none} -setup {
-    new-store
-    mtime set {A B AX Z C R}
-} -body {
-    mtime unset X*
-    kt dictsort [mtime get]
-} -cleanup {
-    release-store
-} -result {A B AX Z C R}
-
-test phash::mtime::[who]-unset-1.2 {unset, all} -setup {
-    new-store
-    mtime set {A B AX Z C R}
-} -body {
-    mtime unset
-    kt dictsort [mtime get]
-} -cleanup {
-    release-store
-} -result {}
-
-test phash::mtime::[who]-unset-1.3 {unset, some} -setup {
-    new-store
-    mtime set {A B AX Z C R}
-} -body {
-    mtime unset A*
-    kt dictsort [mtime get]
-} -cleanup {
-    release-store
-} -result {C R}
-
-# # ## ### ##### ######## ############# #####################
-## unsetv
-
-test phash::mtime::[who]-unsetv-1.0 {unsetv, wrong#args, not enough} -setup {
-    new-store
-} -body {
-    mtime unsetv
-} -cleanup {
-    release-store
-} -returnCodes error -result {wrong # args: should be "mtime unsetv key"}
-
-test phash::mtime::[who]-unsetv-1.1 {unsetv, wrong#args, too many} -setup {
-    new-store
-} -body {
-    mtime unsetv K X
-} -cleanup {
-    release-store
-} -returnCodes error -result {wrong # args: should be "mtime unsetv key"}
-
-test phash::mtime::[who]-unsetv-1.2 {unsetv, known} -setup {
-    new-store
-    mtime set {A B AX Z C R}
-} -body {
-    mtime unsetv A
-    kt dictsort [mtime get]
-} -cleanup {
-    release-store
-} -result {AX Z C R}
-
-test phash::mtime::[who]-unsetv-1.3 {unsetv, unknown} -setup {
-    new-store
-    mtime set {A B AX Z C R}
-} -body {
-    mtime unsetv B
-} -cleanup {
-    release-store
-} -returnCodes error -result {Expected key, got "B"}
+kt source parts/core.testsuite
 
 # # ## ### ##### ######## ############# #####################
 return
