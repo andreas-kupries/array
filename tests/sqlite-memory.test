@@ -17,10 +17,10 @@ kt local   testing phash::sqlite
 ## Identify the class under test, for the suites containing the common
 ## and shared test cases.
 
-proc test-class {} { return phash::sqlite/file }
+proc test-class {} { return phash::sqlite/memory }
 
 kt source support/common.tcl
-kt source support/setup-sqlite-file.tcl
+kt source support/setup-sqlite-memory.tcl
 
 # # ## ### ##### ######## ############# #####################
 
