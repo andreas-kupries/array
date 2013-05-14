@@ -1,7 +1,15 @@
+TODO
+
+	Check the method result requirements for 'tie', and put them
+	into the code and tests.
+
+
 Usable by Tcllib's tie package.
 
 base API
 	Simple persistent hash. Tcl array.
+
+		key --> value
 
 	clear:  ()	   --> ()
 	exists: key 	   --> boolean
@@ -15,8 +23,10 @@ base API
 	unsetv:	pattern?   --> ()
 
 mtime API.
-	Extended persistent hash. Maintains a last-modified timestamp
-	per key.
+	Extended persistent hash.
+	Maintains a last-modified timestamp per key.
+
+		key -> (mtime, value)
 	
 	clear:  ()	    	  --> ()
 	exists: key 	   	  --> boolean
@@ -32,8 +42,12 @@ mtime API.
 	unsetv:	pattern?   	  --> ()
 
 multi API.
-	Extended persistent hash. Maintains multiple hashes per store,
-	using a 2-level key scheme, documents and fields.
+	Extended persistent hash.
+
+	Maintains multiple hashes per store, using a 2-level key
+	scheme, documents and fields.
+
+		(docid, key) --> value
 
 	The main API is operating on the totality of the store,
 	document independent.  An integrated backend in the main class
@@ -51,28 +65,47 @@ multi API.
 	unset:	doc key	      --> ()
 	unsetv:	doc pattern?  --> ()
 
+multitime API
+	Combines mtime and multi into a single system.
+
+	Maintains multiple mtime-hashes per store, using a 2-level key
+	scheme, documents and fields.
+
+		(docid, key) --> (value, mtime)
+
+	The main API is operating on the totality of the store,
+	document independent (equal to multi).  An integrated backend
+	in the main class provides access to individual documents as
+	separate mtime instances, and the mtime API.
+
+	Use case for multitime is the cached store of (fossil) ticket
+	changes, for example. The cache contains the latest (mtime)
+	state for all tickets (documents) and their fields (hash key).
 
 
+base  --> multi
+  |         |
+  V         V
+mtime --> multitime
 
+=========================
 
+listbase
+	Extended from base, distinguish scalar and list values.
+	Has to keep type information per key.
 
-phash - Simple persistent hash
-	key --> value
+listmulti
+	multi on top of listbase
 
-phash::mtime - Extended phash storing mtime per key
-	key -> (mtime, value)
+listmtime
+	mtime on top of listbase
 
-kphash - multiple independent phashes in a single store.
-	(docid, key) --> value
+listmultitime
+	multitime on top of listbase
 
-mkphash - Extend kphash, multiple independent phash::mtime in a single store.
+	Use case: Ticket changes, where fields can be lists, and list
+	elements should be individually accessible, searchable.
 
-	(docid, key) --> (value, mtime)
-
-Use case for mkphash is the cached store of, say ticket changes. The
-cache contains the latest (mtime) state for all tickets (documents)
-and their fields (hash key).
-
-
-Check the method result requirements for 'tie', and put them into the
-code and tests.
+	(Alternate example: Catalog for a library. Author field of
+	each catalog entry is a list, title field of same entry is
+	not).
