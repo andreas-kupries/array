@@ -5,14 +5,14 @@
 proc store-class {} { lindex [split [test-class] /] 0 }
 
 proc new-store {} {
-    sqlite3              mydb    :memory:
-    [store-class] create myphash ::mydb phash
+    sqlite3              test-database :memory:
+    [store-class] create test-store    ::test-database phash
     return
 }
 
 proc release-store {} {
-    catch { myphash destroy }
-    catch { mydb    close   }
+    catch { test-store    destroy }
+    catch { test-database close   }
     return
 }
 

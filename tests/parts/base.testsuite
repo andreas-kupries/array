@@ -18,7 +18,7 @@
 test [test-class]-common::base-dispatch-1.1 {instance, bad method name} -setup {
     new-store
 } -body {
-    myphash foo
+    test-store foo
 } -cleanup {
     release-store
 } -returnCodes error \
@@ -30,26 +30,26 @@ test [test-class]-common::base-dispatch-1.1 {instance, bad method name} -setup {
 test [test-class]-common::base-setv-1.0 {setv, wrong#args, not enough} -setup {
     new-store
 } -body {
-    myphash setv
+    test-store setv
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "myphash setv key value"}
+} -returnCodes error -result {wrong # args: should be "test-store setv key value"}
 
 test [test-class]-common::base-setv-1.1 {setv, wrong#args, not enough} -setup {
     new-store
 } -body {
-    myphash setv K
+    test-store setv K
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "myphash setv key value"}
+} -returnCodes error -result {wrong # args: should be "test-store setv key value"}
 
 test [test-class]-common::base-setv-1.2 {setv, wrong#args, too many} -setup {
     new-store
 } -body {
-    myphash setv K V X
+    test-store setv K V X
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "myphash setv key value"}
+} -returnCodes error -result {wrong # args: should be "test-store setv key value"}
 
 # # ## ### ##### ######## ############# #####################
 

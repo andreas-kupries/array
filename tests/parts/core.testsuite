@@ -18,11 +18,11 @@
 test [test-class]-common::core-dispatch-1.0 {instance, no method} -setup {
     new-store
 } -body {
-    myphash
+    test-store
 } -cleanup {
     release-store
 } -returnCodes error \
-    -result {wrong # args: should be "myphash method ?arg ...?"}
+    -result {wrong # args: should be "test-store method ?arg ...?"}
 
 # # ## ### ##### ######## ############# #####################
 ## destructor
@@ -30,16 +30,16 @@ test [test-class]-common::core-dispatch-1.0 {instance, no method} -setup {
 test [test-class]-common::core-destroy-1.0 {destroy, wrong#args, too many} -setup {
     new-store
 } -body {
-    myphash destroy X
+    test-store destroy X
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "myphash destroy"}
+} -returnCodes error -result {wrong # args: should be "test-store destroy"}
 
 test [test-class]-common::core-destroy-1.1 {destroy} -setup {
     new-store
 } -body {
     release-store
-    info commands ::myphash
+    info commands ::test-store
 } -result {}
 
 # # ## ### ##### ######## ############# #####################
@@ -48,27 +48,27 @@ test [test-class]-common::core-destroy-1.1 {destroy} -setup {
 test [test-class]-common::core-clear-1.0 {clear, wrong#args, too many} -setup {
     new-store
 } -body {
-    myphash clear S
+    test-store clear S
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "myphash clear"}
+} -returnCodes error -result {wrong # args: should be "test-store clear"}
 
 test [test-class]-common::core-clear-1.1 {clear, none} -setup {
     new-store
 } -body {
-    list [myphash size] [myphash clear] [myphash size]
+    list [test-store size] [test-store clear] [test-store size]
 } -cleanup {
     release-store
 } -result {0 {} 0}
 
 test [test-class]-common::core-clear-1.2 {clear, some} -setup {
     new-store
-    myphash setv S C
-    myphash setv A R
-    myphash setv R A
-    myphash setv C S
+    test-store setv S C
+    test-store setv A R
+    test-store setv R A
+    test-store setv C S
 } -body {
-    list [myphash size] [myphash clear] [myphash size]
+    list [test-store size] [test-store clear] [test-store size]
 } -cleanup {
     release-store
 } -result {4 {} 0}
@@ -79,32 +79,32 @@ test [test-class]-common::core-clear-1.2 {clear, some} -setup {
 test [test-class]-common::core-exists-1.0 {exists, wrong#args, not enough} -setup {
     new-store
 } -body {
-    myphash exists
+    test-store exists
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "myphash exists key"}
+} -returnCodes error -result {wrong # args: should be "test-store exists key"}
 
 test [test-class]-common::core-exists-1.1 {exists, wrong#args, too many} -setup {
     new-store
 } -body {
-    myphash exists S X
+    test-store exists S X
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "myphash exists key"}
+} -returnCodes error -result {wrong # args: should be "test-store exists key"}
 
 test [test-class]-common::core-exists-1.2 {exists, no} -setup {
     new-store
 } -body {
-    myphash exists S
+    test-store exists S
 } -cleanup {
     release-store
 } -result 0
 
 test [test-class]-common::core-exists-1.3 {exists, yes} -setup {
     new-store
-    myphash setv S A
+    test-store setv S A
 } -body {
-    myphash exists S
+    test-store exists S
 } -cleanup {
     release-store
 } -result 1
@@ -115,39 +115,39 @@ test [test-class]-common::core-exists-1.3 {exists, yes} -setup {
 test [test-class]-common::core-get-1.0 {get, wrong#args, too many} -setup {
     new-store
 } -body {
-    myphash get P X
+    test-store get P X
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "myphash get ?pattern?"}
+} -returnCodes error -result {wrong # args: should be "test-store get ?pattern?"}
 
 test [test-class]-common::core-get-1.1 {get, nothing} -setup {
     new-store
 } -body {
-    myphash get
+    test-store get
 } -cleanup {
     release-store
 } -result {}
 
 test [test-class]-common::core-get-1.2 {get, all} -setup {
     new-store
-    myphash setv S C
-    myphash setv A R
-    myphash setv R A
-    myphash setv C S
+    test-store setv S C
+    test-store setv A R
+    test-store setv R A
+    test-store setv C S
 } -body {
-    kt dictsort [myphash get]
+    kt dictsort [test-store get]
 } -cleanup {
     release-store
 } -result {A R C S R A S C}
 
 test [test-class]-common::core-get-1.3 {get, some} -setup {
     new-store
-    myphash setv S C
-    myphash setv A R
-    myphash setv R A
-    myphash setv C S
+    test-store setv S C
+    test-store setv A R
+    test-store setv R A
+    test-store setv C S
 } -body {
-    kt dictsort [myphash get {[AR]}]
+    kt dictsort [test-store get {[AR]}]
 } -cleanup {
     release-store
 } -result {A R R A}
@@ -158,44 +158,44 @@ test [test-class]-common::core-get-1.3 {get, some} -setup {
 test [test-class]-common::core-getv-1.0 {getv, wrong#args, not enough} -setup {
     new-store
 } -body {
-    myphash getv
+    test-store getv
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "myphash getv key"}
+} -returnCodes error -result {wrong # args: should be "test-store getv key"}
 
 test [test-class]-common::core-getv-1.1 {getv, wrong#args, too many} -setup {
     new-store
 } -body {
-    myphash getv S X
+    test-store getv S X
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "myphash getv key"}
+} -returnCodes error -result {wrong # args: should be "test-store getv key"}
 
 test [test-class]-common::core-getv-1.2 {getv, unknown key} -setup {
     new-store
 } -body {
-    myphash getv 0
+    test-store getv 0
 } -cleanup {
     release-store
 } -returnCodes error -result {Expected key, got "0"}
 
 test [test-class]-common::core-getv-1.3 {getv, known} -setup {
     new-store
-    myphash setv S S
+    test-store setv S S
 } -body {
-    myphash getv S
+    test-store getv S
 } -cleanup {
     release-store
 } -result S
 
 test [test-class]-common::core-getv-1.4 {getv, known} -setup {
     new-store
-    myphash setv S C
-    myphash setv A R
-    myphash setv R A
-    myphash setv C S
+    test-store setv S C
+    test-store setv A R
+    test-store setv R A
+    test-store setv C S
 } -body {
-    myphash getv A
+    test-store getv A
 } -cleanup {
     release-store
 } -result R
@@ -206,39 +206,39 @@ test [test-class]-common::core-getv-1.4 {getv, known} -setup {
 test [test-class]-common::core-names-1.0 {names, wrong#args, too many} -setup {
     new-store
 } -body {
-    myphash names S X
+    test-store names S X
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "myphash names ?pattern?"}
+} -returnCodes error -result {wrong # args: should be "test-store names ?pattern?"}
 
 test [test-class]-common::core-names-1.1 {names, none} -setup {
     new-store
 } -body {
-    myphash names
+    test-store names
 } -cleanup {
     release-store
 } -result {}
 
 test [test-class]-common::core-names-1.2 {names, all} -setup {
     new-store
-    myphash setv S C
-    myphash setv A R
-    myphash setv R A
-    myphash setv C S
+    test-store setv S C
+    test-store setv A R
+    test-store setv R A
+    test-store setv C S
 } -body {
-    lsort -dict [myphash names]
+    lsort -dict [test-store names]
 } -cleanup {
     release-store
 } -result {A C R S}
 
 test [test-class]-common::core-names-1.3 {names, some} -setup {
     new-store
-    myphash setv S C
-    myphash setv A R
-    myphash setv R A
-    myphash setv C S
+    test-store setv S C
+    test-store setv A R
+    test-store setv R A
+    test-store setv C S
 } -body {
-    lsort -dict [myphash names {[AR]}]
+    lsort -dict [test-store names {[AR]}]
 } -cleanup {
     release-store
 } -result {A R}
@@ -249,23 +249,23 @@ test [test-class]-common::core-names-1.3 {names, some} -setup {
 test [test-class]-common::core-set-1.0 {set, wrong#args, not enough} -setup {
     new-store
 } -body {
-    myphash set
+    test-store set
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "myphash set dict"}
+} -returnCodes error -result {wrong # args: should be "test-store set dict"}
 
 test [test-class]-common::core-set-1.1 {set, wrong#args, too many} -setup {
     new-store
 } -body {
-    myphash set D X
+    test-store set D X
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "myphash set dict"}
+} -returnCodes error -result {wrong # args: should be "test-store set dict"}
 
 test [test-class]-common::core-set-1.2 {set} -setup {
     new-store
 } -body {
-    list [myphash set {A B X Z C R}] [kt dictsort [myphash get]]
+    list [test-store set {A B X Z C R}] [kt dictsort [test-store get]]
 } -cleanup {
     release-store
 } -result {{} {A B C R X Z}}
@@ -276,17 +276,17 @@ test [test-class]-common::core-set-1.2 {set} -setup {
 test [test-class]-common::core-setv-1.3 {setv} -setup {
     new-store
 } -body {
-    myphash setv A B
+    test-store setv A B
 } -cleanup {
     release-store
 } -result B
 
 test [test-class]-common::core-setv-1.4 {setv, replace} -setup {
     new-store
-    myphash setv A B
+    test-store setv A B
 } -body {
-    myphash setv A C
-    myphash getv A
+    test-store setv A C
+    test-store getv A
 } -cleanup {
     release-store
 } -result C
@@ -297,26 +297,26 @@ test [test-class]-common::core-setv-1.4 {setv, replace} -setup {
 test [test-class]-common::core-size-1.0 {size, wrong#args, too many} -setup {
     new-store
 } -body {
-    myphash size X
+    test-store size X
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "myphash size"}
+} -returnCodes error -result {wrong # args: should be "test-store size"}
 
 test [test-class]-common::core-size-1.1 {size} -setup {
     new-store
-    myphash setv A B
+    test-store setv A B
 } -body {
-    myphash size
+    test-store size
 } -cleanup {
     release-store
 } -result 1
 
 test [test-class]-common::core-size-1.2 {size} -setup {
     new-store
-    myphash setv A B
-    myphash setv B C
+    test-store setv A B
+    test-store setv B C
 } -body {
-    myphash size
+    test-store size
 } -cleanup {
     release-store
 } -result 2
@@ -327,27 +327,27 @@ test [test-class]-common::core-size-1.2 {size} -setup {
 test [test-class]-common::core-unset-1.0 {unset, wrong#args, too many} -setup {
     new-store
 } -body {
-    myphash unset P X
+    test-store unset P X
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "myphash unset ?pattern?"}
+} -returnCodes error -result {wrong # args: should be "test-store unset ?pattern?"}
 
 test [test-class]-common::core-unset-1.1 {unset, some, not empty} -setup {
     new-store
-    myphash set {A B AX Z C R}
+    test-store set {A B AX Z C R}
 } -body {
-    myphash unset A*
-    kt dictsort [myphash get]
+    test-store unset A*
+    kt dictsort [test-store get]
 } -cleanup {
     release-store
 } -result {C R}
 
 test [test-class]-common::core-unset-1.2 {unset, all, not empty} -setup {
     new-store
-    myphash set {A B AX Z C R}
+    test-store set {A B AX Z C R}
 } -body {
-    myphash unset
-    kt dictsort [myphash get]
+    test-store unset
+    kt dictsort [test-store get]
 } -cleanup {
     release-store
 } -result {}
@@ -355,8 +355,8 @@ test [test-class]-common::core-unset-1.2 {unset, all, not empty} -setup {
 test [test-class]-common::core-unset-1.3 {unset, some/none, empty} -setup {
     new-store
 } -body {
-    myphash unset A*
-    myphash get
+    test-store unset A*
+    test-store get
 } -cleanup {
     release-store
 } -result {}
@@ -364,8 +364,8 @@ test [test-class]-common::core-unset-1.3 {unset, some/none, empty} -setup {
 test [test-class]-common::core-unset-1.4 {unset, all/none, empty} -setup {
     new-store
 } -body {
-    myphash unset
-    myphash get
+    test-store unset
+    test-store get
 } -cleanup {
     release-store
 } -result {}
@@ -377,34 +377,34 @@ test [test-class]-common::core-unset-1.4 {unset, all/none, empty} -setup {
 test [test-class]-common::core-unsetv-1.0 {unsetv, wrong#args, not enough} -setup {
     new-store
 } -body {
-    myphash unsetv
+    test-store unsetv
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "myphash unsetv key"}
+} -returnCodes error -result {wrong # args: should be "test-store unsetv key"}
 
 test [test-class]-common::core-unsetv-1.1 {unsetv, wrong#args, too many} -setup {
     new-store
 } -body {
-    myphash unsetv K X
+    test-store unsetv K X
 } -cleanup {
     release-store
-} -returnCodes error -result {wrong # args: should be "myphash unsetv key"}
+} -returnCodes error -result {wrong # args: should be "test-store unsetv key"}
 
 test [test-class]-common::core-unsetv-1.2 {unsetv, known} -setup {
     new-store
-    myphash set {A B AX Z C R}
+    test-store set {A B AX Z C R}
 } -body {
-    myphash unsetv A
-    kt dictsort [myphash get]
+    test-store unsetv A
+    kt dictsort [test-store get]
 } -cleanup {
     release-store
 } -result {AX Z C R}
 
 test [test-class]-common::core-unsetv-1.3 {unsetv, unknown, not empty} -setup {
     new-store
-    myphash set {A B AX Z C R}
+    test-store set {A B AX Z C R}
 } -body {
-    myphash unsetv B
+    test-store unsetv B
 } -cleanup {
     release-store
 } -returnCodes error -result {Expected key, got "B"}
@@ -412,7 +412,7 @@ test [test-class]-common::core-unsetv-1.3 {unsetv, unknown, not empty} -setup {
 test [test-class]-common::core-unsetv-1.4 {unsetv, unknown, empty} -setup {
     new-store
 } -body {
-    myphash unsetv B
+    test-store unsetv B
 } -cleanup {
     release-store
 } -returnCodes error -result {Expected key, got "B"}

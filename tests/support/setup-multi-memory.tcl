@@ -3,16 +3,16 @@
 # # ## ### ##### ######## ############# #####################
 
 proc new-store {} {
-    [test-class] create mymulti
-    rename [mymulti open ABC] myphash
-    rename [mymulti open XYZ] mydoc
+    [test-class] create test-multi-store
+    rename [test-multi-store open ABC] test-store
+    rename [test-multi-store open XYZ] test-doc-store
     return
 }
 
 proc release-store {} {
-    myphash destroy
-    mydoc   destroy
-    mymulti destroy
+    test-store       destroy
+    test-doc-store   destroy
+    test-multi-store destroy
     return
 }
 

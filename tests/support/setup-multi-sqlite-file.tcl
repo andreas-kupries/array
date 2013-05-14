@@ -5,25 +5,19 @@
 proc store-class {} { lindex [split [test-class] /] 0 }
 
 proc new-store {} {
-    global store_path
-    set    store_path [file normalize _phash_[pid]_]
-
-    sqlite3              mydb    $store_path
-    [store-class] create mymulti ::mydb phash
-    rename [mymulti open ABC] myphash
-    rename [mymulti open XYZ] mydoc
-    return myphash
+    sqlite3              test-database    [file normalize _phash_[pid]_]
+    [store-class] create test-multi-store ::test-database phash
+    rename [test-multi-store open ABC] test-store
+    rename [test-multi-store open XYZ] test-doc-store
+    return test-store
 }
 
 proc release-store {} {
-    catch { myphash destroy }
-    catch { mydoc   destroy }
-    catch { mymulti destroy }
-    catch { mydb    close   }
-
-    global store_path
-    file delete $store_path
-    unset store_path
+    catch { test-store destroy }
+    catch { test-doc-store   destroy }
+    catch { test-multi-store destroy }
+    catch { test-database    close   }
+    file delete [file normalize _phash_[pid]_]
     return
 }
 

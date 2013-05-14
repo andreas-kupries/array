@@ -3,12 +3,12 @@
 # # ## ### ##### ######## ############# #####################
 
 proc new-store {} {
-    [test-class] create myphash
+    [test-class] create test-store
     return
 }
 
 proc release-store {} {
-    myphash destroy
+    test-store destroy
     return
 }
 
