@@ -21,35 +21,42 @@ oo::class create phash {
     # # ## ### ##### ######## #############
     ## API. Virtual methods. Implementation required.
 
-    # get: pattern? --> dict
-    method get {{pattern *}} { my APIerror get }
+    # # ## ### ##### ######## #############
+    ### Retrieval and query operations.
 
-    # set: dict --> ()
-    method set {dict} { my APIerror set }
+    # size: () --> integer
+    method size {} { my APIerror size }
 
-    # unset: pattern? --> ()
-    method unset {{pattern *}} { my APIerror unset }
-
-    # getv: key --> value
-    method getv {key} { my APIerror getv }
-
-    # setv: key value --> value
-    method setv {key value} { my APIerror setv }
-
-    # unsetv: key --> ()
-    method unsetv {key} { my APIerror unsetv }
-
-    # names: pattern? --> list(string)
+    # names: ?pattern? --> list(string)
     method names {{pattern *}} { my APIerror names }
 
     # exists: key --> boolean
     method exists {key} { my APIerror exists }
 
-    # size: () --> integer
-    method size {} { my APIerror size }
+    # get: ?pattern? --> dict (key --> value)
+    method get {{pattern *}} { my APIerror get }
+
+    # getv: key --> value
+    method getv {key} { my APIerror getv }
+
+    # # ## ### ##### ######## #############
+    ### Modifying operations.
+
+    # set: dict (key --> value) --> ()
+    method set {dict} { my APIerror set }
+
+    # setv: (key, value) --> value
+    method setv {key value} { my APIerror setv }
+
+    # unset: ?pattern? --> ()
+    method unset {{pattern *}} { my APIerror unset }
+
+    # unsetv: key --> ()
+    method unsetv {key} { my APIerror unsetv }
 
     # clear: () --> ()
-    method clear {} { my APIerror clear }
+    method clear {} { my unset }
+    # clear <==> 'unset *' <==> 'unset'
 
     # # ## ### ##### ######## #############
     ## Internal helpers

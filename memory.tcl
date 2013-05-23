@@ -30,20 +30,20 @@ oo::class create phash::memory {
     # # ## ### ##### ######## #############
     ## API. Implementation of inherited virtual methods.
 
-    # get: pattern? --> dict
+    # # ## ### ##### ######## #############
+    ### Retrieval and query operations.
+
+    # size: () --> integer
+    method size {} { array size mymap }
+
+    # names: ?pattern? --> list(string)
+    method names {{pattern *}} { array names mymap $pattern }
+
+    # exists: string --> boolean
+    method exists {key} { info exists mymap($key) }
+
+    # get: ?pattern? --> dict (key --> value)
     method get {{pattern *}} { array get mymap $pattern }
-
-    # set: dict --> ()
-    method set {dict} {
-	array set mymap $dict
-	return
-    }
-
-    # unset: pattern? --> ()
-    method unset {{pattern *}} {
-	array unset mymap $pattern
-	return    
-    }
 
     # getv: key --> value
     method getv {key} {
@@ -51,23 +51,29 @@ oo::class create phash::memory {
 	return $mymap($key)
     }
 
+    # # ## ### ##### ######## #############
+    ### Modifying operations.
+
+    # set: dict (key --> value) --> ()
+    method set {dict} {
+	array set mymap $dict
+	return
+    }
+
     # setv: (key, value) --> value
     method setv {key value} { set mymap($key) $value }
 
-    # unsetv: (key) --> ()
+    # unset: ?pattern? --> ()
+    method unset {{pattern *}} {
+	array unset mymap $pattern
+	return    
+    }
+
+    # unsetv: key --> ()
     method unsetv {key} {
 	my Validate $key
 	unset mymap($key)
     }
-
-    # names: pattern? --> list(string)
-    method names {{pattern *}} { array names mymap $pattern }
-
-    # exists: string --> boolean
-    method exists {key} { info exists mymap($key) }
-
-    # size: () --> integer
-    method size {} { array size mymap }
 
     # clear: () --> ()
     method clear {} { array unset mymap * }

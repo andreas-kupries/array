@@ -19,16 +19,6 @@ oo::class create phash::sqlite {
     superclass phash
 
     # # ## ### ##### ######## #############
-    ## State
-
-    variable mytable \
-	sql_get	sql_setv sql_unset sql_clear \
-	sql_getv sql_unsetv sql_names sql_size \
-	sql_getall sql_namesall
-    # Name of the database table used for storage
-    # plus the sql commands to access it.
-
-    # # ## ### ##### ######## #############
     ## Lifecycle.
 
     constructor {database table} {
@@ -43,72 +33,17 @@ oo::class create phash::sqlite {
     # # ## ### ##### ######## #############
     ## API. Implementation of inherited virtual methods.
 
-    # get: pattern? --> dict
-    method get {{pattern *}} {
-	if {$pattern eq "*"} {
-	    DB transaction {
-		DB eval $sql_getall
-	    }
-	} else {
-	    DB transaction {
-		DB eval $sql_get
-	    }
-	}
-    }
+    # # ## ### ##### ######## #############
+    ### Retrieval and query operations.
 
-    # set: dict --> ()
-    method set {dict} {
+    # size: () --> integer
+    method size {} { 
 	DB transaction {
-	    dict for {key value} $dict {
-		DB eval $sql_setv
-	    }
+	    DB eval $sql_size
 	}
     }
 
-    # unset: pattern? --> ()
-    method unset {{pattern *}} {
-	if {$pattern eq "*"} {
-	    DB transaction {
-		DB eval $sql_clear
-	    }
-	} else {
-	    DB transaction {
-		DB eval $sql_unset
-	    }
-	}
-    }
-
-    # getv: key --> value
-    method getv {key} {
-	DB transaction {
-	    if {![DB exists $sql_getv]} {
-		my Error "Expected key, got \"$key\"" \
-		    BAD KEY $key
-	    }
-	    DB onecolumn $sql_getv
-	}
-    }
-
-    # setv: (key, value) --> value
-    method setv {key value} {
-	DB transaction {
-	    DB eval $sql_setv
-	}
-	return $value
-    }
-
-    # unsetv: key --> ()
-    method unsetv {key} {
-	DB transaction {
-	    if {![DB exists $sql_getv]} {
-		my Error "Expected key, got \"$key\"" \
-		    BAD KEY $key
-	    }
-	    DB eval $sql_unsetv
-	}
-    }
-
-    # names: pattern? --> list(string)
+    # names: ?pattern? --> list(string)
     method names {{pattern *}} {
 	if {$pattern eq "*"} {
 	    DB transaction {
@@ -128,10 +63,71 @@ oo::class create phash::sqlite {
 	}
     }
 
-    # size: () --> integer
-    method size {} { 
+    # get: ?pattern? --> dict (key --> value)
+    method get {{pattern *}} {
+	if {$pattern eq "*"} {
+	    DB transaction {
+		DB eval $sql_getall
+	    }
+	} else {
+	    DB transaction {
+		DB eval $sql_get
+	    }
+	}
+    }
+
+    # getv: key --> value
+    method getv {key} {
 	DB transaction {
-	    DB eval $sql_size
+	    if {![DB exists $sql_getv]} {
+		my Error "Expected key, got \"$key\"" \
+		    BAD KEY $key
+	    }
+	    DB onecolumn $sql_getv
+	}
+    }
+
+    # # ## ### ##### ######## #############
+    ### Modifying operations.
+
+    # set: dict (key --> value) --> ()
+    method set {dict} {
+	DB transaction {
+	    dict for {key value} $dict {
+		DB eval $sql_setv
+	    }
+	}
+    }
+
+    # setv: (key, value) --> value
+    method setv {key value} {
+	DB transaction {
+	    DB eval $sql_setv
+	}
+	return $value
+    }
+
+    # unset: ?pattern? --> ()
+    method unset {{pattern *}} {
+	if {$pattern eq "*"} {
+	    DB transaction {
+		DB eval $sql_clear
+	    }
+	} else {
+	    DB transaction {
+		DB eval $sql_unset
+	    }
+	}
+    }
+
+    # unsetv: key --> ()
+    method unsetv {key} {
+	DB transaction {
+	    if {![DB exists $sql_getv]} {
+		my Error "Expected key, got \"$key\"" \
+		    BAD KEY $key
+	    }
+	    DB eval $sql_unsetv
 	}
     }
 
@@ -141,6 +137,15 @@ oo::class create phash::sqlite {
 	    DB eval $sql_clear
 	}
     }
+
+    # # ## ### ##### ######## #############
+    ## State
+
+    variable \
+	sql_get	sql_setv sql_unset sql_clear \
+	sql_getv sql_unsetv sql_names sql_size \
+	sql_getall sql_namesall
+    # All sql commands used to access our table.
 
     # # ## ### ##### ######## #############
     ## Internals
