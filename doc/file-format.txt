@@ -1,0 +1,124 @@
+Durable file format for the various types of persistent arrays.
+In a way another type of persistence.
+
+The file format defined below does not lend it itself to easy
+mutability however, it is more about a compact and durable serializing
+an array instead of for continuous update. This in contrast to the
+sqlite class which is more for continuous update and integration with
+other data, and not very compact.
+
+Specification:
+
+*	The format is line-based, with each line representating a
+	single "card" containing information.
+
+*	The cards are separated a single linefeed character
+	(ASCII 10).
+
+*	Each card begins with a command, followed by command-specific
+	arguments. Command and arguments are separated by a single
+	space character (ASCII 32). Neither command name, nor
+	arguments may contain spaces, nor linefeeds.
+
+	To ensure this the data is encoded by mapping the forbidding
+	characters and backslash (ASCII 92) to 2-character sequences
+	all starting with a backslash. In detail:
+
+		Character	   Quoted form
+		---------	   -----------
+		ASCII 10 '\n'	   ASCII 92 ASCII 110 ('\' 'n')
+		ASCII 32 ' '	   ASCII 92 ASCII 115 ('\' 's')
+		ASCII 92 '\'	   ASCII 92 ASCII 92  ('\' '\')
+
+*	Cards are stored sorted in exact lexicographic order.
+
+*	The commands used to represent a 'base' array are
+
+	A type
+		Exactly one such card must be present.
+
+		The type argument is an arbitrary string providing
+		meta information about the stored array. The default
+		is the string "array::base", without quotes.
+
+	D timestamp
+		Exactly one such card must be present.
+
+		The timestamp argument is an ISO-8601 timestamp of the
+		form
+			yyyy-mm-ddTHH:MM:SS?.sss?
+
+		(where '-', 'T', ':' and '.' are literal characters)
+
+	U username
+		Exactly one such card must be present.
+
+		The username argument is an arbitrary string
+		identifying the person who generated the file/string
+		holding the array data.
+
+	V key value
+		Zero or more of these cards can be present.
+
+		These cards store the mapping from array keys to
+		values. Zero cards are possible as the array may be
+		empty, i.e. have no keys, nor values.
+
+		It is illegal to use multiple cards for the same
+		'key'.  In other words, the string prefix 'V key' of
+		all 'V' cards must be unique.
+
+	Z checksum
+		Exactly one such card must be present.
+
+		The checksum argument is the 32 character lower-case
+		hexadecimal encoding of the MD5 hash of all prior
+		cards up to and including the ASCII 10 chracter
+		immediately preceding the 'Z' command.
+
+*	The commands used to represent an 'mtime' array are
+	the same as for a 'base' array, plus an additional
+	card type 'W' holding the time information:
+
+	W key timestamp
+		The file must contain a single 'W key' card
+		for each 'V key' card.
+
+		The timestamp argument has the same form as for 'D'
+		cards.
+
+*	The commands used to represent a 'multi' array are
+
+	the same as for a 'base' array, except for 'V' cards. These
+	are replaced 'E' and 'X' cards of the form:
+
+	E document
+		Zero or more of these cards can be present.
+
+		E cards are only needed to represent empty documents,
+		i.e. documents which have are present, but have no
+		keys, nor values.
+
+	X document key value
+		Zero or more of these cards can be present.
+
+		These cards store the mapping from documents and keys
+		to values. Zero cards are possible as the array may be
+		empty, i.e. have neither documents nor keys, nor
+		values.
+
+		It is illegal to use multiple cards for the same
+		combination of document and key.  In other words, the
+		string prefix 'X document key' of all 'X' cards must
+		be unique.
+
+*	The commands used to represent a 'multi-mtime' array are
+
+	the same as for a 'mtime' array, except for 'V' and 'W'
+	cards. These are replaced 'E', 'X', and 'Y' cards. The
+	'E' and 'X' cards are the same as for 'multi' arrays, whereas
+	'Y' cards are of the form
+
+	Y document key timestamp
+
+	and take the place 'mtime's 'W' cards, extended for documents.
