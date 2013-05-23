@@ -35,9 +35,6 @@ oo::class create phash::multi {
     ## Helper class API providing access to named partitions,
     ## i.e. documents of the multi instance
 
-    # open: () --> ()
-    method _open {doc} { my APIerror _open }
-
     # get: pattern? --> dict (key --> value)
     method _get {doc {pattern *}} { my APIerror _get }
 
