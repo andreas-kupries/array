@@ -1,0 +1,45 @@
+## -*- tcl -*-
+## (c) 2013 Andreas Kupries
+# # ## ### ##### ######## ############# #####################
+## Test suite for json serialization of phash stores.
+
+## The external procedures 'new-store' and 'release-store' are used to
+## create and destroy an instance of the store under test. The expected
+## instance command is 'teststore'.
+
+# # ## ### ##### ######## ############# #####################
+
+test phash::multi::serial::json-simple-generate-1.0 {generate, wrong args, not enough} -body {
+    phash::multi::serial::json-simple generate
+} -returnCodes error -result "wrong # args: should be \"phash::multi::serial::json-simple generate dict\""
+
+test phash::multi::serial::json-simple-generate-1.1 {generate, wrong args, too many} -body {
+    phash::multi::serial::json-simple generate D X
+} -returnCodes error -result "wrong # args: should be \"phash::multi::serial::json-simple generate dict\""
+
+test phash::multi::serial::json-simple-generate-2.0 {generate, ordered} -setup {
+    jcsave 0 0
+} -body {
+    phash::multi::serial::json-simple generate {a {f g q r} b {c f j k}}
+} -cleanup {
+    jcrestore
+} -result {{"a":{"f":"g","q":"r"},"b":{"c":"f","j":"k"}}}
+
+test phash::multi::serial::json-simple-generate-2.1 {generate, unordered} -setup {
+    jcsave 0 0
+} -body {
+    phash::multi::serial::json-simple generate {b {j k c f} a {q r f g}}
+} -cleanup {
+    jcrestore
+} -result {{"a":{"f":"g","q":"r"},"b":{"c":"f","j":"k"}}}
+
+test phash::multi::serial::json-simple-generate-2.2 {generate, bad input, not a dict} -setup {
+    jcsave 0 0
+} -body {
+    phash::multi::serial::json-simple generate X
+} -cleanup {
+    jcrestore
+} -returnCodes error -result {missing value to go with key}
+
+# # ## ### ##### ######## ############# #####################
+return

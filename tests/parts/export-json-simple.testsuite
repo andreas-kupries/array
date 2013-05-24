@@ -1,0 +1,32 @@
+## -*- tcl -*-
+## (c) 2013 Andreas Kupries
+# # ## ### ##### ######## ############# #####################
+## Test suite for json serialization of phash stores.
+
+## The external procedures 'new-store' and 'release-store' are used to
+## create and destroy an instance of the store under test. The expected
+## instance command is 'teststore'.
+
+# # ## ### ##### ######## ############# #####################
+
+test [test-class]-common::core-export-json-simple-1.0 {generate, wrong args, too many} -setup {
+    new-store
+} -body {
+    [serial-store] export json-simple X
+} -cleanup {
+    release-store
+} -returnCodes error -result "wrong # args: should be \"[serial-prefix]::serial::json-simple generate [serial-args]\""
+
+test [test-class]-common::core-export-json-simple-2.0 {export json-simple} -setup {
+    jcsave 0 0
+    new-store
+    serial-setup
+} -body {
+    [serial-store] export json-simple
+} -cleanup {
+    release-store
+    jcrestore
+} -result [serial-result-js]
+
+# # ## ### ##### ######## ############# #####################
+return

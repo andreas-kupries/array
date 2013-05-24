@@ -22,7 +22,7 @@ test [test-class]-common::base-dispatch-1.1 {instance, bad method name} -setup {
 } -cleanup {
     release-store
 } -returnCodes error \
-    -result [badmethod foo {clear destroy exists get getv names set setv size unset unsetv}]
+    -result [badmethod foo {clear destroy exists export get getv names set setv size unset unsetv}]
 
 # # ## ### ##### ######## ############# #####################
 ## setv
@@ -52,6 +52,16 @@ test [test-class]-common::base-setv-1.2 {setv, wrong#args, too many} -setup {
 } -returnCodes error -result {wrong # args: should be "test-store setv key value"}
 
 # # ## ### ##### ######## ############# #####################
+
+proc serial-store     {} { return test-store }
+proc serial-prefix    {} { return phash }
+proc serial-args      {} { return dict }
+proc serial-result-js {} { return {{"a":"x","b":"c"}} }
+proc serial-result-je {} { return {{"check":"d35d4cc60cadeadf6f11b02940facf9d","data":{"a":"x","b":"c"},"type":"atest","user":"me","when":"1970-01-01T00:00:00"}} }
+proc serial-setup     {} {
+    test-store set {b c a x}
+}
+
 
 kt source parts/core.testsuite
 
