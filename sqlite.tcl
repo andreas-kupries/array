@@ -79,10 +79,7 @@ oo::class create phash::sqlite {
     # getv: key --> value
     method getv {key} {
 	DB transaction {
-	    if {![DB exists $sql_getv]} {
-		my Error "Expected key, got \"$key\"" \
-		    BAD KEY $key
-	    }
+	    my Validate $key
 	    DB onecolumn $sql_getv
 	}
     }
@@ -123,10 +120,7 @@ oo::class create phash::sqlite {
     # unsetv: key --> ()
     method unsetv {key} {
 	DB transaction {
-	    if {![DB exists $sql_getv]} {
-		my Error "Expected key, got \"$key\"" \
-		    BAD KEY $key
-	    }
+	    my Validate $key
 	    DB eval $sql_unsetv
 	}
     }
@@ -183,6 +177,12 @@ oo::class create phash::sqlite {
 	upvar 1 map map
 	set $var [string map $map $sql]
 	return
+    }
+
+    method Validate {key} {
+	if {[DB exists $sql_getv]} return
+	my Error "Expected key, got \"$key\"" \
+	    BAD KEY $key
     }
 
     # # ## ### ##### ######## #############

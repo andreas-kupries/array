@@ -19,19 +19,6 @@ oo::class create phash::multi::sqlite {
     superclass phash::multi
 
     # # ## ### ##### ######## #############
-    ## State
-
-    variable mytable \
-	sql_get	sql_setv sql_unset sql_clear \
-	sql_getv sql_unsetv sql_names sql_size \
-	sql_getall sql_namesall sql_gclear \
-	sql_gget sql_ggetv sql_gnames \
-	sql_gnamesall sql_gsize sql_gunset \
-	sql_gunsetv sql_gkeysall sql_gkeys
-    # Name of the database table used for storage
-    # plus the sql commands to access it.
-
-    # # ## ### ##### ######## #############
     ## Lifecycle.
 
     constructor {database table} {
@@ -46,72 +33,14 @@ oo::class create phash::multi::sqlite {
     # # ## ### ##### ######## #############
     ## API. Implementation of inherited virtual methods.
 
-    # get: pattern? --> dict
-    method _get {doc {pattern *}} {
-	if {$pattern eq "*"} {
-	    DB transaction {
-		DB eval $sql_getall
-	    }
-	} else {
-	    DB transaction {
-		DB eval $sql_get
-	    }
-	}
-    }
-
-    # set: dict --> ()
-    method _set {doc dict} {
+    # size: () --> integer
+    method _size {doc} { 
 	DB transaction {
-	    dict for {key value} $dict {
-		DB eval $sql_setv
-	    }
+	    DB eval $sql_size
 	}
     }
 
-    # unset: pattern? --> ()
-    method _unset {doc {pattern *}} {
-	if {$pattern eq "*"} {
-	    DB transaction {
-		DB eval $sql_clear
-	    }
-	} else {
-	    DB transaction {
-		DB eval $sql_unset
-	    }
-	}
-    }
-
-    # getv: key --> value
-    method _getv {doc key} {
-	DB transaction {
-	    if {![DB exists $sql_getv]} {
-		my Error "Expected key, got \"$key\"" \
-		    BAD KEY $key
-	    }
-	    DB onecolumn $sql_getv
-	}
-    }
-
-    # setv: (key, value) --> value
-    method _setv {doc key value} {
-	DB transaction {
-	    DB eval $sql_setv
-	}
-	return $value
-    }
-
-    # unsetv: key --> ()
-    method _unsetv {doc key} {
-	DB transaction {
-	    if {![DB exists $sql_getv]} {
-		my Error "Expected key, got \"$key\"" \
-		    BAD KEY $key
-	    }
-	    DB eval $sql_unsetv
-	}
-    }
-
-    # names: pattern? --> list(string)
+    # names: ?pattern? --> list(string)
     method _names {doc {pattern *}} {
 	if {$pattern eq "*"} {
 	    DB transaction {
@@ -131,10 +60,62 @@ oo::class create phash::multi::sqlite {
 	}
     }
 
-    # size: () --> integer
-    method _size {doc} { 
+    # get: ?pattern? --> dict (key --> value)
+    method _get {doc {pattern *}} {
+	if {$pattern eq "*"} {
+	    DB transaction {
+		DB eval $sql_getall
+	    }
+	} else {
+	    DB transaction {
+		DB eval $sql_get
+	    }
+	}
+    }
+
+    # getv: key --> value
+    method _getv {doc key} {
 	DB transaction {
-	    DB eval $sql_size
+	    my Validate $doc $key
+	    DB onecolumn $sql_getv
+	}
+    }
+
+    # set: dict (key --> value) --> ()
+    method _set {doc dict} {
+	DB transaction {
+	    dict for {key value} $dict {
+		DB eval $sql_setv
+	    }
+	}
+    }
+
+    # setv: (key, value) --> value
+    method _setv {doc key value} {
+	DB transaction {
+	    DB eval $sql_setv
+	}
+	return $value
+    }
+
+    # unset: ?pattern? --> ()
+    method _unset {doc {pattern *}} {
+	if {$pattern eq "*"} {
+	    DB transaction {
+		DB eval $sql_clear
+	    }
+	} else {
+	    DB transaction {
+		DB eval $sql_unset
+	    }
+	}
+    }
+
+    # unsetv: key --> ()
+    method _unsetv {doc key} {
+	DB transaction {
+	    my Validate $doc $key
+	    DB eval $sql_unsetv
 	}
     }
 
@@ -150,7 +131,40 @@ oo::class create phash::multi::sqlite {
     #
     ## Global API for overall (document independent access).
 
-    # get: pattern? --> (dict (key --> (doc --> value)))
+    # size: () --> integer
+    method size {} {
+	DB transaction {
+	    DB eval $sql_gsize
+	}
+    }
+
+    # names: ?pattern? --> list(string)
+    method names {{pattern *}} {
+	if {$pattern eq ""} {
+	    DB transaction {
+		DB eval $sql_gnamesall
+	    }
+	} else {
+	    DB transaction {
+		DB eval $sql_gnames
+	    }
+	}
+    }
+
+    # keys: ?pattern? --> list(string)
+    method keys {{pattern *}} {
+	if {$pattern eq ""} {
+	    DB transaction {
+		DB eval $sql_gkeysall
+	    }
+	} else {
+	    DB transaction {
+		DB eval $sql_gkeys
+	    }
+	}
+    }
+
+    # get: ?pattern? --> (dict (key --> (doc --> value)))
     method get {{pattern *}} {
 	set r {}
 	DB transaction {
@@ -159,20 +173,6 @@ oo::class create phash::multi::sqlite {
 	    }
 	}
 	return $r
-    }
-
-    # unset: pattern? --> ()
-    method unset {{pattern *}} {
-	if {$pattern eq ""} {
-	    DB transaction {
-		DB eval $sql_gclear
-	    }
-	} else {
-	    DB transaction {
-		DB eval $sql_gunset 
-	    }
-	}
-	return
     }
 
     # getv: key --> (dict (doc --> value))
@@ -186,6 +186,20 @@ oo::class create phash::multi::sqlite {
 	return $r
     }
 
+    # unset: ?pattern? --> ()
+    method unset {{pattern *}} {
+	if {$pattern eq ""} {
+	    DB transaction {
+		DB eval $sql_gclear
+	    }
+	} else {
+	    DB transaction {
+		DB eval $sql_gunset 
+	    }
+	}
+	return
+    }
+
     # unsetv: key --> ()
     method unsetv {key} {
 	DB transaction {
@@ -194,45 +208,25 @@ oo::class create phash::multi::sqlite {
 	return
     }
 
-    # names: pattern? --> list(string)
-    method names {{pattern *}} {
-	if {$pattern eq ""} {
-	    DB transaction {
-		DB eval $sql_gnamesall
-	    }
-	} else {
-	    DB transaction {
-		DB eval $sql_gnames
-	    }
-	}
-    }
-
-    # keys: pattern? --> list(string)
-    method keys {{pattern *}} {
-	if {$pattern eq ""} {
-	    DB transaction {
-		DB eval $sql_gkeysall
-	    }
-	} else {
-	    DB transaction {
-		DB eval $sql_gkeys
-	    }
-	}
-    }
-
-    # size: () --> integer
-    method size {} {
-	DB transaction {
-	    DB eval $sql_gsize
-	}
-    }
-
     # clear: () --> ()
     method clear {} {
 	DB transaction {
 	    DB eval $sql_gclear
 	}
     }
+
+    # # ## ### ##### ######## #############
+    ## State
+
+    variable \
+	sql_get	sql_setv sql_unset sql_clear \
+	sql_getv sql_unsetv sql_names sql_size \
+	sql_getall sql_namesall sql_gclear \
+	sql_gget sql_ggetv sql_gnames \
+	sql_gnamesall sql_gsize sql_gunset \
+	sql_gunsetv sql_gkeysall sql_gkeys
+    # Name of the database table used for storage
+    # plus the sql commands to access it.
 
     # # ## ### ##### ######## #############
     ## Internals
@@ -287,6 +281,12 @@ oo::class create phash::multi::sqlite {
 	upvar 1 map map
 	set $var [string map $map $sql]
 	return
+    }
+
+    method Validate {doc key} {
+	if {[DB exists $sql_getv]} return
+	my Error "Expected key, got \"$key\"" \
+	    BAD KEY $key
     }
 
     # # ## ### ##### ######## #############

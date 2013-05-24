@@ -73,11 +73,24 @@ multi API.
                 (docid, key) --> value
 
         The main API is operating on the totality of the store,
-        document independent.  An integrated backend in the main class
-        provides access to individual documents as separate base
-        instances, and its standard base API.
+        document independent.
 
-        size:   ?doc?          --> integer
+	size:	()	  --> integer		(#documents)
+	names:	?pattern? --> list (string)	(matching doc names)
+	keys:	?pattern? --> list (string)	(matching key names across all documents)
+
+	get:    ?pattern? --> dict (key --> (doc --> value))
+	getv:   key       --> dict (doc --> value)
+
+	unset:  ?pattern? --> ()	     (remove matchng keys in all documents)
+	unsetv: key       --> ()	     (remove key in all documents)
+	clear:  ()        --> ()	     (remove all keys and documents)
+
+	An integrated backend in the main class provides access to
+        individual documents as separate base instances, and its
+        standard base API.
+
+        size:   doc            --> integer
         names:  doc ?pattern?  --> list (keys)
         exists: doc key        --> boolean
 
