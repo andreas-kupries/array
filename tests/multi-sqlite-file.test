@@ -9,9 +9,14 @@ kt check tcltest 2
 kt require support TclOO
 kt require support sqlite3
 kt require support dbutil
+kt require support json
+kt require support json::write
+kt require support md5
 
 kt local   support phash
 kt local   support phash::multi
+kt local   support phash::multi::serial::json-simple
+kt local   support phash::multi::serial::json-extended
 kt local   testing phash::multi::sqlite
 
 # # ## ### ##### ######## ############# #####################

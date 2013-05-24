@@ -98,6 +98,18 @@ oo::class create phash::multi {
     method clear {} { my APIerror clear }
 
     # # ## ### ##### ######## #############
+    ## (De)serialization.
+
+    method export {format args} {
+	package require phash::multi::serial::$format
+	set all {}
+	foreach doc [my names] {
+	    dict set all $doc [my _get $doc]
+	}
+	return [phash::multi::serial::$format generate $all {*}$args]
+    }
+
+    # # ## ### ##### ######## #############
     ## Internal helpers
 
     method Error {text args} {

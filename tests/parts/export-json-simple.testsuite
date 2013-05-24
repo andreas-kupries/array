@@ -12,7 +12,7 @@
 test [test-class]-common::core-export-json-simple-1.0 {generate, wrong args, too many} -setup {
     new-store
 } -body {
-    test-store export json-simple X
+    [serial-store] export json-simple X
 } -cleanup {
     release-store
 } -returnCodes error -result "wrong # args: should be \"[serial-prefix]::serial::json-simple generate [serial-args]\""
@@ -20,10 +20,9 @@ test [test-class]-common::core-export-json-simple-1.0 {generate, wrong args, too
 test [test-class]-common::core-export-json-simple-2.0 {export json-simple} -setup {
     jcsave 0 0
     new-store
-    test-store set {a x b c}
     serial-setup
 } -body {
-    test-store export json-simple
+    [serial-store] export json-simple
 } -cleanup {
     release-store
     jcrestore
