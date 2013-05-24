@@ -59,6 +59,14 @@ oo::class create phash {
     # clear <==> 'unset *' <==> 'unset'
 
     # # ## ### ##### ######## #############
+    ## (De)serialization.
+
+    method export {format args} {
+	package require phash::serial::$format
+	return [phash::serial::$format generate [my get] {*}$args]
+    }
+
+    # # ## ### ##### ######## #############
     ## Internal helpers
 
     method Error {text args} {

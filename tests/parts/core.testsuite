@@ -418,4 +418,19 @@ test [test-class]-common::core-unsetv-1.4 {unsetv, unknown, empty} -setup {
 } -returnCodes error -result {Expected key, got "B"}
 
 # # ## ### ##### ######## ############# #####################
+## export
+
+test [test-class]-common::core-export-json-simple-1.0 {export wrong args, not enough} -setup {
+    new-store
+} -body {
+    test-store export
+} -cleanup {
+    release-store
+} -returnCodes error -result "wrong # args: should be \"test-store export format ...\""
+
+kt source support/jc.tcl
+kt source parts/export-json-simple.testsuite
+kt source parts/export-json-extended.testsuite
+
+# # ## ### ##### ######## ############# #####################
 return
