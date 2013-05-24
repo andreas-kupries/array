@@ -22,45 +22,73 @@ oo::class create phash::mtime {
     # # ## ### ##### ######## #############
     ## API. Virtual methods. Implementation required.
 
-    # get: pattern? --> dict (key -> value)
-    method get {{pattern *}} { my APIerror get }
+    # # ## ### ##### ######## #############
+    ### Retrieval and query operations.
 
-    # set: dict --> ()
-    method set {dict} { my APIerror set }
+    # size: () --> integer
+    method size {} { my APIerror size }
 
-    # unset: pattern? --> ()
-    method unset {{pattern *}} { my APIerror unset }
-
-    # getv: key --> value
-    method getv {key} { my APIerror getv }
-
-    # setv: (key, value, time?) --> value
-    method setv {key value {time {}}} { my APIerror setv }
-
-    # unsetv: key --> ()
-    method unsetv {key} { my APIerror unsetv }
-
-    # names: pattern? --> list(key)
+    # names: ?pattern? --> list(key)
     method names {{pattern *}} { my APIerror names }
 
     # exists: key --> boolean
     method exists {key} { my APIerror exists }
 
-    # size: () --> integer
-    method size {} { my APIerror size }
+    # get: ?pattern? --> dict (key --> value)
+    method get {{pattern *}} { my APIerror get }
 
-    # clear: () --> ()
-    method clear {} { my APIerror clear }
+    # getv: key --> value
+    method getv {key} { my APIerror getv }
+
+    # Future: Queries by time range.
+    #         - after   x,
+    #         - before  x,
+    #         - between x y
+    #         - not-after   x,
+    #         - not-before  x,
+    #         - not-between x y
 
     # # ## ### ##### ######## #############
-    ## Additional acessors to query last modified information, bulk
-    ## and for individual keys.
+    ### Modifying operations.
 
-    # gett: () --> dict (key -> mtime)
-    method gett {} { my APIerror gett }
+    # set: dict (key --> value) --> ()
+    method set {dict} { my APIerror set }
 
-    # gettv: key --> mtime
-    method gettv {key} { my APIerror gettv }
+    # setv: (key, value, ?time?) --> value
+    method setv {key value {time {}}} { my APIerror setv }
+
+    # unset: ?pattern? --> ()
+    method unset {{pattern *}} { my APIerror unset }
+
+    # unsetv: key --> ()
+    method unsetv {key} { my APIerror unsetv }
+
+    # clear: () --> ()
+    method clear {} { my unset }
+    # clear <==> 'unset *' <==> 'unset'
+
+    # # ## ### ##### ######## #############
+    ## Additional acessors to query and change last modified
+    ## information, bulk and for individual keys.
+
+    # get-time: ?pattern? --> dict (key --> mtime)
+    method get-time {{pattern *}} { my APIerror get-time }
+
+    # get-timev: key --> mtime
+    method get-timev {key} { my APIerror get-timev }
+
+    # set-timev: (key, time) --> time
+    method set-timev {key time} { my APIerror set-timev }
+
+    # # ## ### ##### ######## #############
+    ## (De)serialization.
+
+    method export {format args} {
+	package require phash::mtime::serial::$format
+	return [phash::mtime::serial::$format generate \
+		    [my get] [my get-time] \
+		    {*}$args]
+    }
 
     # # ## ### ##### ######## #############
     ## Internal helpers

@@ -15,18 +15,19 @@ test [test-class]-common::core-export-json-extended-1.0 {generate, wrong args, t
     test-store export json-extended T U W X
 } -cleanup {
     release-store
-} -returnCodes error -result "wrong # args: should be \"phash::serial::json-extended generate dict ?type? ?user? ?when?\""
+} -returnCodes error -result "wrong # args: should be \"[serial-prefix]::serial::json-extended generate [serial-args] ?type? ?user? ?when?\""
 
 test [test-class]-common::core-export-json-extended-2.0 {export json-extended} -setup {
     jcsave 0 0
     new-store
     test-store set {a x b c}
+    serial-setup
 } -body {
     test-store export json-extended atest me 0
 } -cleanup {
     release-store
     jcrestore
-} -result {{"check":d35d4cc60cadeadf6f11b02940facf9d,"data":{"a":"x","b":"c"},"type":atest,"user":me,"when":1970-01-01T00:00:00}}
+} -result [serial-result-je]
 
 # # ## ### ##### ######## ############# #####################
 return

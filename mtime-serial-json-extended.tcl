@@ -17,34 +17,53 @@ package require json
 package require json::write ; # config (indented|aligned) is left to user.
 package require md5 2
 
-namespace eval ::phash::serial::json-extended {}
+namespace eval ::phash::mtime::serial::json-extended {}
 
 # # ## ### ##### ######## ############# #####################
 ## API Implementation
 
-proc ::phash::serial::json-extended::generate {dict {type {}} {user {}} {when {}}} {
+proc ::phash::mtime::serial::json-extended::generate {dictv dictt {type {}} {user {}} {when {}}} {
+    set kv [lsort -dict [dict keys $dictv]]
+    set kt [lsort -dict [dict keys $dictt]]
+    if {$kv ne $kt} {
+	return -code error -errorcode {PHASH MTIME SERIAL JSON-SIMPLE GEN BAD} \
+	    "Data mismatch between value and time dictionaries"
+    }
     if {$type eq {}} { set type array::base }
     if {$user eq {}} { set user $::tcl_platform(user) }
     if {$when eq {}} { set when [clock seconds] }
 
-    set when   [clock format $when -gmt 1 -format {%Y-%m-%dT%H:%M:%S}]
-    set sorted [DictSort $dict]
+    set when [FmtTime $when]
+
+    set tmp {}
+    foreach k $kv {
+	set v [dict get $dictv $k]
+	set t [FmtTime [dict get $dictt $k]]
+	lappend sorted $k $t $v
+	lappend tmp $k [json::write::array \
+			    [json::write::string $v] \
+			    [json::write::string $t]]
+    }
 
     return [json::write::object \
 		check [json::write::string [Checksum $sorted type $type user $user when $when]] \
-		data  [json::write::object {*}[Process $sorted]] \
-		type  [json::write::string $type] \
-		user  [json::write::string $user] \
+		data  [json::write::object {*}$tmp] \
+		type  [json::write::string $type]   \
+		user  [json::write::string $user]   \
 		when  [json::write::string $when]]
 }
 
-proc ::phash::serial::json-extended::parse {json} {
+proc ::phash::mtime::serial::json-extended::parse {json} {
 }
 
 # # ## ### ##### ######## ############# #####################
 ## Internal support.
 
-proc ::phash::serial::json-extended::Checksum {args} {
+proc ::phash::mtime::serial::json-extended::FmtTime {t} {
+    return [clock format $t -gmt 1 -format {%Y-%m-%dT%H:%M:%S}]
+}
+
+proc ::phash::mtime::serial::json-extended::Checksum {args} {
     set s {}
     foreach item $args {
 	append s "[string length $item] $item\n"
@@ -52,31 +71,15 @@ proc ::phash::serial::json-extended::Checksum {args} {
     return [string tolower [md5::md5 -hex -- $s]]
 }
 
-proc ::phash::serial::json-extended::Process {dict} {
-    set tmp {}
-    foreach {k v} $dict {
-	lappend tmp $k [json::write::string $v]
-    }
-    return $tmp
-}
-
-proc ::phash::serial::json-extended::DictSort {dict} {
-    set tmp {}
-    foreach k [lsort -dict [dict keys $dict]] {
-	lappend tmp $k [dict get $dict $k]
-    }
-    return $tmp
-}
-
 # # ## ### ##### ######## ############# #####################
 ## Publish API
 
-namespace eval ::phash::serial::json-extended {
+namespace eval ::phash::mtime::serial::json-extended {
     namespace export generate parse
     namespace ensemble create
 }
 
 # # ## ### ##### ######## ############# #####################
 ## Ready
-package provide phash::serial::json-extended 0
+package provide phash::mtime::serial::json-extended 0
 return

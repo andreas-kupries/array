@@ -7,8 +7,13 @@ kt check Tcl     8.5
 kt check tcltest 2
 
 kt require support TclOO
+kt require support json
+kt require support json::write
+kt require support md5 2
 
 kt local   support phash::mtime
+kt local   support phash::mtime::serial::json-simple
+kt local   support phash::mtime::serial::json-extended
 kt local   testing phash::mtime::memory
 
 # # ## ### ##### ######## ############# #####################

@@ -37,8 +37,8 @@ mtime API.
 
                 key --> (mtime, value)
 
-        (Queries based on time: older than, younger than?)
-                (Index: mtime --> list (key)
+	alt	key --> mtime
+		key --> value
 
         size:   ()                --> integer
         names:  ?pattern?         --> list (keys)
@@ -56,7 +56,13 @@ mtime API.
 
 **      get-time:   ?pattern?     --> dict (key --> mtime)
 **      get-timev:  key           --> mtime
-**      set-time:   key time      --> ()
+**      set-timev:  key time      --> time
+
+	Future: after x, before x, between x y
+	Future: not-after x, not-before x, not-between x y
+
+        (Queries based on time: older than, younger than?)
+                (Index: mtime --> list (key)
 
 multi API.
         Extended persistent hash.
