@@ -13,6 +13,7 @@ kt local   testing phash::serial::json-simple
 
 # # ## ### ##### ######## ############# #####################
 
+kt source support/jc.tcl
 kt source parts/serial-json-simple.testsuite
 
 # # ## ### ##### ######## ############# #####################

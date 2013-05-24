@@ -7,22 +7,6 @@
 ## create and destroy an instance of the store under test. The expected
 ## instance command is 'teststore'.
 
-proc jcsave {i a} {
-    variable jc [list [json::write::indented] [json::write::aligned]]
-    json::write::indented $i
-    json::write::aligned  $a
-    return
-}
-
-proc jcrestore {} {
-    variable jc
-    lassign $jc i a
-    json::write::indented $i
-    json::write::aligned  $a
-    unset jc
-    return
-}
-
 # # ## ### ##### ######## ############# #####################
 
 test phash::serial::json-simple-generate-1.0 {generate, wrong args, not enough} -body {

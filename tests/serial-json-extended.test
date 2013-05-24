@@ -14,6 +14,7 @@ kt local   testing phash::serial::json-extended
 
 # # ## ### ##### ######## ############# #####################
 
+kt source support/jc.tcl
 kt source parts/serial-json-extended.testsuite
 
 # # ## ### ##### ######## ############# #####################
