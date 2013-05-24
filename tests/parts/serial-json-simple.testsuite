@@ -1,0 +1,61 @@
+## -*- tcl -*-
+## (c) 2013 Andreas Kupries
+# # ## ### ##### ######## ############# #####################
+## Test suite for json serialization of phash stores.
+
+## The external procedures 'new-store' and 'release-store' are used to
+## create and destroy an instance of the store under test. The expected
+## instance command is 'teststore'.
+
+proc jcsave {i a} {
+    variable jc [list [json::write::indented] [json::write::aligned]]
+    json::write::indented $i
+    json::write::aligned  $a
+    return
+}
+
+proc jcrestore {} {
+    variable jc
+    lassign $jc i a
+    json::write::indented $i
+    json::write::aligned  $a
+    unset jc
+    return
+}
+
+# # ## ### ##### ######## ############# #####################
+
+test phash::serial::json-simple-generate-1.0 {generate, wrong args, not enough} -body {
+    phash::serial::json-simple generate
+} -returnCodes error -result "wrong # args: should be \"phash::serial::json-simple generate dict\""
+
+test phash::serial::json-simple-generate-1.1 {generate, wrong args, too many} -body {
+    phash::serial::json-simple generate D X
+} -returnCodes error -result "wrong # args: should be \"phash::serial::json-simple generate dict\""
+
+test phash::serial::json-simple-generate-2.0 {generate, ordered} -setup {
+    jcsave 0 0
+} -body {
+    phash::serial::json-simple generate {a x b c}
+} -cleanup {
+    jcrestore
+} -result {{"a":"x","b":"c"}}
+
+test phash::serial::json-simple-generate-2.1 {generate, unordered} -setup {
+    jcsave 0 0
+} -body {
+    phash::serial::json-simple generate {b c a x}
+} -cleanup {
+    jcrestore
+} -result {{"a":"x","b":"c"}}
+
+test phash::serial::json-simple-generate-2.2 {generate, bad input, not a dict} -setup {
+    jcsave 0 0
+} -body {
+    phash::serial::json-simple generate X
+} -cleanup {
+    jcrestore
+} -returnCodes error -result {missing value to go with key}
+
+# # ## ### ##### ######## ############# #####################
+return

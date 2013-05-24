@@ -1,0 +1,64 @@
+## -*- tcl -*-
+## (c) 2013 Andreas Kupries
+# # ## ### ##### ######## ############# #####################
+## Test suite for json serialization of phash stores.
+
+## The external procedures 'new-store' and 'release-store' are used to
+## create and destroy an instance of the store under test. The expected
+## instance command is 'teststore'.
+
+proc jcsave {i a} {
+    variable jc [list [json::write::indented] [json::write::aligned]]
+    json::write::indented $i
+    json::write::aligned  $a
+    return
+}
+
+proc jcrestore {} {
+    variable jc
+    lassign $jc i a
+    json::write::indented $i
+    json::write::aligned  $a
+    unset jc
+    return
+}
+
+# # ## ### ##### ######## ############# #####################
+
+test phash::serial::json-extended-generate-1.0 {generate, wrong args, not enough} -body {
+    phash::serial::json-extended generate
+} -returnCodes error -result "wrong # args: should be \"phash::serial::json-extended generate dict ?type? ?user? ?when?\""
+
+test phash::serial::json-extended-generate-1.1 {generate, wrong args, too many} -body {
+    phash::serial::json-extended generate D T U W X
+} -returnCodes error -result "wrong # args: should be \"phash::serial::json-extended generate dict ?type? ?user? ?when?\""
+
+test phash::serial::json-extended-generate-2.0 {generate, ordered} -setup {
+    jcsave 0 0
+} -body {
+    phash::serial::json-extended generate {a x b c} atest me 0
+} -cleanup {
+    jcrestore
+} -result {{"check":d35d4cc60cadeadf6f11b02940facf9d,"data":{"a":"x","b":"c"},"type":atest,"user":me,"when":1970-01-01T00:00:00}}
+
+test phash::serial::json-extended-generate-2.1 {generate, unordered} -setup {
+    jcsave 0 0
+} -body {
+    phash::serial::json-extended generate {b c a x} atest me 0
+} -cleanup {
+    jcrestore
+} -result {{"check":d35d4cc60cadeadf6f11b02940facf9d,"data":{"a":"x","b":"c"},"type":atest,"user":me,"when":1970-01-01T00:00:00}}
+
+test phash::serial::json-extended-generate-2.2 {generate, bad input, not a dict} -setup {
+    jcsave 0 0
+} -body {
+    phash::serial::json-extended generate X
+} -cleanup {
+    jcrestore
+} -returnCodes error -result {missing value to go with key}
+
+# TODO: tcl_platform dependency, default type.
+# TODO: Bad timestamp (non-integer)
+
+# # ## ### ##### ######## ############# #####################
+return

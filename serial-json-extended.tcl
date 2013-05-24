@@ -4,11 +4,9 @@
 
 ## Commands to convert 'base' arrays into json and back.
 ## The intermediate representation is a Tcl dictionary.
-
-## Two external representations are supported, "simple", and
-## "extended". The simple form is a json object mapping keys to
-## values. The extended form contains additional information (type
-## data, user identification, timestamp, and checksum) around the
+## This package generates an 'extended' representation (compared to
+## 'json-simple'). The form contains additional information, namely
+## type data, user identification, timestamp, and checksum around the
 ## simple data.
 
 # # ## ### ##### ######## ############# #####################
@@ -19,42 +17,42 @@ package require json
 package require json::write ; # config (indented|aligned) is left to user.
 package require md5 2
 
-namespace eval ::phash::serial::json {}
+namespace eval ::phash::serial::json-extended {}
 
 # # ## ### ##### ######## ############# #####################
 ## API Implementation
 
-proc ::phash::serial::json::toSimple {dict} {
-    return [json::write::object {*}[Process [DictSort $dict]]]
-}
-
-proc ::phash::serial::json::toExtended {dict {type {}} {user {}} {when {}}} {
+proc ::phash::serial::json-extended::generate {dict {type {}} {user {}} {when {}}} {
     if {$type eq {}} { set type array::base }
     if {$user eq {}} { set user $::tcl_platform(user) }
     if {$when eq {}} { set when [clock seconds] }
-    set when [clock format $when -format {%Y-%m-%dT%H:%M:%S}]
 
+    set when   [clock format $when -gmt 1 -format {%Y-%m-%dT%H:%M:%S}]
     set sorted [DictSort $dict]
-    set check  [string tolower [md5 -hex -- $sorted]]
 
     return [json::write::object \
-		check $check \
+		check [Checksum $sorted type $type user $user when $when] \
 		data  [json::write::object {*}[Process $sorted]] \
 		type  $type  \
 		user  $user  \
 		when  $when]
 }
 
-proc ::phash::serial::json::parseSimple {json} {
-}
-
-proc ::phash::serial::json::parseExtended {json} {
+proc ::phash::serial::json-extended::parse {json} {
 }
 
 # # ## ### ##### ######## ############# #####################
-## Internal help.
+## Internal support.
 
-proc ::phash::serial::json::Process {dict} {
+proc ::phash::serial::json-extended::Checksum {args} {
+    set s {}
+    foreach item $args {
+	append s "[string length $item] $item\n"
+    }
+    return [string tolower [md5::md5 -hex -- $s]]
+}
+
+proc ::phash::serial::json-extended::Process {dict} {
     set tmp {}
     foreach {k v} $dict {
 	lappend tmp $k [json::write::string $v]
@@ -62,7 +60,7 @@ proc ::phash::serial::json::Process {dict} {
     return $tmp
 }
 
-proc ::phash::serial::json::DictSort {dict} {
+proc ::phash::serial::json-extended::DictSort {dict} {
     set tmp {}
     foreach k [lsort -dict [dict keys $dict]] {
 	lappend tmp $k [dict get $dict $k]
@@ -73,14 +71,12 @@ proc ::phash::serial::json::DictSort {dict} {
 # # ## ### ##### ######## ############# #####################
 ## Publish API
 
-namespace eval ::phash::serial::json {
-    namespace export \
-	toSimple    toExtended \
-	parseSimple parseExtended
+namespace eval ::phash::serial::json-extended {
+    namespace export generate parse
     namespace ensemble create
 }
 
 # # ## ### ##### ######## ############# #####################
 ## Ready
-package provide phash::serial::json 0
+package provide phash::serial::json-extended 0
 return

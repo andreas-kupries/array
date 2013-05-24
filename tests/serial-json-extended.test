@@ -1,0 +1,20 @@
+# -*- tcl -*- tcl.tk//DSL tcltest//EN//2.0 tcl.tk//DSL tcltest//EN//2.0
+## (c) 2013 Andreas Kupries
+# # ## ### ##### ######## ############# #####################
+## serial-json.test:  tests for json serialization, store independent.
+
+kt check Tcl     8.5
+kt check tcltest 2
+
+kt require support json
+kt require support json::write
+kt require support md5 2
+
+kt local   testing phash::serial::json-extended
+
+# # ## ### ##### ######## ############# #####################
+
+kt source parts/serial-json-extended.testsuite
+
+# # ## ### ##### ######## ############# #####################
+cleanupTests
