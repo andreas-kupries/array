@@ -2,10 +2,10 @@
 ## (c) 2013 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
 
-## Commands to convert 'base' arrays into json and back.
+## Commands to convert 'mtime' arrays into json and back.
 ## The intermediate representation is a Tcl dictionary.
 ## This package generates a simple json representation, just
-## mapping keys and vaues into a single JSON object.
+## mapping keys and values into a single JSON object.
 
 # # ## ### ##### ######## ############# #####################
 ## Requisites
