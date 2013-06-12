@@ -58,7 +58,7 @@ oo::class create phash::mtime::memory {
 	return
     }
 
-    # setv: (key, value, time?) --> value
+    # setv: (key, value, ?time?) --> value
     method setv {key value {time {}}} {
 	if {[llength [info level 0]] < 5} {
 	    set time [clock seconds]
@@ -80,6 +80,7 @@ oo::class create phash::mtime::memory {
     method unsetv {key} {
 	my Validate $key
 	unset mymap($key)
+	unset mytime($key)
 	return
     }
 
