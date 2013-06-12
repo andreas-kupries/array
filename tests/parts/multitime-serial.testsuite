@@ -1,0 +1,32 @@
+## -*- tcl -*-
+## (c) 2013 Andreas Kupries
+# # ## ### ##### ######## ############# #####################
+## Test suite for phash::multi stores, (de)serialization.
+
+# # ## ### ##### ######## ############# #####################
+
+proc serial-store     {} { return test-multi-store }
+proc serial-prefix    {} { return phash::multitime }
+proc serial-args      {} { return dict }
+proc serial-result-js {} { return {{"a":{"f":["g","1970-01-01T00:00:00"],"q":["r","1970-01-01T00:00:00"]},"b":{"c":["f","1970-01-01T00:00:00"],"j":["k","1970-01-01T00:00:00"]}}} }
+proc serial-result-je {} { return {{"check":"97ffaf627fa2c318a47580c547e6ef54","data":{"a":{"f":["g","1970-01-01T00:00:00"],"q":["r","1970-01-01T00:00:00"]},"b":{"c":["f","1970-01-01T00:00:00"],"j":["k","1970-01-01T00:00:00"]}},"type":"atest","user":"me","when":"1970-01-01T00:00:00"}} }
+proc serial-setup     {} {
+    set n [test-multi-store open b]
+    $n set {j k c f}
+    $n set-timev j 0
+    $n set-timev c 0
+    $n destroy
+    set n [test-multi-store open a]
+    $n set {q r f g}
+    $n set-timev q 0
+    $n set-timev f 0
+    $n destroy
+    return
+}
+
+kt source support/jc.tcl
+kt source parts/export-json-simple.testsuite
+kt source parts/export-json-extended.testsuite
+
+# # ## ### ##### ######## ############# #####################
+return
