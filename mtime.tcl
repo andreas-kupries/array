@@ -40,6 +40,9 @@ oo::class create phash::mtime {
     # getv: key --> value
     method getv {key} { my APIerror getv }
 
+    # value: ?pattern? --> dict (key --> value)
+    method value {{pattern *}} { my APIerror value }
+
     # Future: Queries by time range.
     #         - after   x,
     #         - before  x,

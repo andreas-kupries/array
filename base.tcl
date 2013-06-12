@@ -39,6 +39,9 @@ oo::class create phash {
     # getv: key --> value
     method getv {key} { my APIerror getv }
 
+    # value: ?pattern? --> dict (key --> value)
+    method value {{pattern *}} { my APIerror value }
+
     # # ## ### ##### ######## #############
     ### Modifying operations.
 

@@ -28,7 +28,7 @@ oo::class create phash::mtime::sqlite {
 	    key   TEXT PRIMARY KEY,
 	    mtime DATE NOT NULL,
 	    value TEXT NOT NULL
-	}
+	} {{value}}
     }
 
     classmethod check {database table} {
@@ -90,6 +90,19 @@ oo::class create phash::mtime::sqlite {
 	DB transaction {
 	    my Validate $key
 	    DB onecolumn $sql_getv
+	}
+    }
+
+    # value: ?pattern? --> dict (key --> value)
+    method value {{pattern *}} {
+	if {$pattern eq "*"} {
+	    DB transaction {
+		DB eval $sql_getall
+	    }
+	} else {
+	    DB transaction {
+		DB eval $sql_value
+	    }
 	}
     }
 
@@ -179,7 +192,7 @@ oo::class create phash::mtime::sqlite {
     variable \
 	sql_clear sql_get sql_getall sql_gett sql_gettall \
 	sql_gettv sql_getv sql_names sql_namesall sql_setv \
-	sql_size sql_unset sql_unsetv sql_settv
+	sql_size sql_unset sql_unsetv sql_settv sql_value
     # Name of the database table used for storage
     # plus the sql commands to access it.
 
@@ -200,6 +213,7 @@ oo::class create phash::mtime::sqlite {
 	}
 
 	# Generate the custom sql commands.
+	my Def sql_value    { SELECT key, value FROM "<<table>>" WHERE value GLOB :pattern }
 	my Def sql_get      { SELECT key, value FROM "<<table>>" WHERE key GLOB :pattern }
 	my Def sql_getall   { SELECT key, value FROM "<<table>>" }
 	my Def sql_getv     { SELECT value      FROM "<<table>>" WHERE key = :key }

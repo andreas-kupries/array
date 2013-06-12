@@ -61,6 +61,12 @@ oo::class create phash::multi::memory {
 	dict get $mymap $doc $key
     }
 
+    # value: ?pattern? --> dict (key --> value)
+    method _value {doc {pattern *}} {
+	if {![dict exists $mymap $doc]} {return {}}
+	dict filter [dict get $mymap $doc] value $pattern
+    }
+
     # set: dict (key --> value) --> ()
     method _set {doc dict} {
 	if {![dict exists $mymap $doc]} {

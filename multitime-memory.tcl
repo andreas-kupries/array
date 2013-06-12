@@ -56,6 +56,12 @@ oo::class create phash::multitime::memory {
 	dict filter [dict get $mymap $doc] key $pattern
     }
 
+    # value: ?pattern? --> dict (key --> value)
+    method _value {doc {pattern *}} {
+	if {![dict exists $mymap $doc]} {return {}}
+	dict filter [dict get $mymap $doc] value $pattern
+    }
+
     # getv: key --> value
     method _getv {doc key} {
 	my Validate $doc $key

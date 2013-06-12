@@ -30,9 +30,7 @@ oo::class create phash::multitime::sqlite {
 	    mtime DATE NOT NULL,
 	    value TEXT NOT NULL,
 	    PRIMARY KEY (doc, key)
-	} {
-	    {key}
-	}
+	} {{key} {doc value}}
     }
 
     classmethod check {database table} {
@@ -95,6 +93,19 @@ oo::class create phash::multitime::sqlite {
 	} else {
 	    DB transaction {
 		DB eval $sql_get
+	    }
+	}
+    }
+
+    # value: ?pattern? --> dict (key --> value)
+    method _value {doc {pattern *}} {
+	if {$pattern eq "*"} {
+	    DB transaction {
+		DB eval $sql_getall
+	    }
+	} else {
+	    DB transaction {
+		DB eval $sql_value
 	    }
 	}
     }
@@ -281,8 +292,8 @@ oo::class create phash::multitime::sqlite {
     variable \
 	sql_get	sql_setv sql_unset sql_clear \
 	sql_getv sql_unsetv sql_names sql_size \
-	sql_getall sql_namesall sql_gclear \
-	sql_gget sql_ggetv sql_gnames \
+	sql_getall sql_namesall sql_value \
+	sql_gclear sql_gget sql_ggetv sql_gnames \
 	sql_gnamesall sql_gsize sql_gunset \
 	sql_gunsetv sql_gkeysall sql_gkeys \
 	sql_gett sql_gettall sql_gettv sql_settv
@@ -308,6 +319,7 @@ oo::class create phash::multitime::sqlite {
 
 	# Generate the custom sql commands.
 	# Query and manipulate partitions/documents/...
+	my Def sql_value    { SELECT key, value FROM "<<table>>" WHERE doc = :doc AND value GLOB :pattern }
 	my Def sql_get      { SELECT key, value FROM "<<table>>" WHERE doc = :doc AND key GLOB :pattern }
 	my Def sql_getall   { SELECT key, value FROM "<<table>>" WHERE doc = :doc }
 	my Def sql_getv     { SELECT value      FROM "<<table>>" WHERE doc = :doc AND key = :key }

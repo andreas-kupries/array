@@ -25,7 +25,7 @@ oo::class create phash::sqlite {
 	dbutil setup $database $table {
 	    key   TEXT PRIMARY KEY,
 	    value TEXT NOT NULL
-	}
+	} {{value}}
     }
 
     classmethod check {database table} {
@@ -101,6 +101,19 @@ oo::class create phash::sqlite {
 	}
     }
 
+    # value: ?pattern? --> dict (key --> value)
+    method value {{pattern *}} {
+	if {$pattern eq "*"} {
+	    DB transaction {
+		DB eval $sql_getall
+	    }
+	} else {
+	    DB transaction {
+		DB eval $sql_value
+	    }
+	}
+    }
+
     # # ## ### ##### ######## #############
     ### Modifying operations.
 
@@ -155,7 +168,7 @@ oo::class create phash::sqlite {
     variable \
 	sql_get	sql_setv sql_unset sql_clear \
 	sql_getv sql_unsetv sql_names sql_size \
-	sql_getall sql_namesall
+	sql_getall sql_namesall sql_value
     # All sql commands used to access our table.
 
     # # ## ### ##### ######## #############
@@ -175,6 +188,7 @@ oo::class create phash::sqlite {
 	}
 
 	# Generate the custom sql commands.
+	my Def sql_value    { SELECT key, value FROM "<<table>>" WHERE value GLOB :pattern }
 	my Def sql_get      { SELECT key, value FROM "<<table>>" WHERE key GLOB :pattern }
 	my Def sql_getall   { SELECT key, value FROM "<<table>>" }
 	my Def sql_getv     { SELECT value      FROM "<<table>>" WHERE key = :key }

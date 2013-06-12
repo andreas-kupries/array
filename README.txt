@@ -25,7 +25,12 @@ base API
         unsetv: key        --> ()
         clear:  ()         --> ()
 
-	Alternate names?
+	Query data by value (glob).
+	Return the dictionary for matching values.
+
+        value: ?pattern?  --> dict (key --> value)
+
+	Alternate names for various methods?
 
 		regsub getv   get1   get_value
 		regsub setv   set1   set_value
@@ -130,26 +135,25 @@ mtime --> multitime
 =========================
 
 listbase
-        Extended from base, distinguish scalar and list values.
-        Has to keep type information per key.
+        Extended from base, treat all values as lists. Scalars are
+        just a list containing a single element.
 
-                key --> (type, value)
-                type in { list, string }
+                key --> list (value)
         
         clear:  ()                --> ()
         exists: key               --> boolean
-        get:    pattern?          --> dict (key --> value)
-        gett:   pattern?          --> dict (key --> type)
-        gettv:  key               --> type
-        getv:   key               --> value
-        names:  pattern?          --> list (keys)
+        get:    ?pattern?         --> dict (key --> list (value))
+        getv:   key               --> list (value)
+        names:  ?pattern?         --> list (keys)
         set:    dict              --> ()
-        setv:   key value type?   --> value
-        sett:   key type          --> value
+        setv:   key value...      --> value...
+	append:	key value...      --> value...
+	remove: key value...	  --> ()
         size:   ()                --> integer
         unset:  key               --> ()
-        unsetv: pattern?          --> ()
+        unsetv: ?pattern?         --> ()
 
+Methods to query by value.
 
 
 listmulti

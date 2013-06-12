@@ -20,7 +20,7 @@ oo::class create phash::memory {
     ## State
 
     variable mymap
-    # mymap: array (key --> value)
+    # mymap: dict (key --> value)
 
     # # ## ### ##### ######## #############
     ## Lifecycle.
@@ -49,6 +49,17 @@ oo::class create phash::memory {
     method getv {key} {
 	my Validate $key
 	return $mymap($key)
+    }
+
+    # value: ?pattern? --> dict (key --> value)
+    method value {{pattern *}} {
+	set result {}
+	foreach k [array names mymap] {
+	    set v $mymap($k)
+	    if {![string match $pattern $v]} continue
+	    dict set result $k $v
+	}
+	return $result
     }
 
     # # ## ### ##### ######## #############

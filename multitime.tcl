@@ -53,6 +53,9 @@ oo::class create phash::multitime {
     # getv: key --> value
     method _getv {doc key} { my APIerror _getv }
 
+    # value: ?pattern? --> dict (key --> value)
+    method _value {doc {pattern *}} { my APIerror _value }
+
     # set: dict (key --> value) --> ()
     method _set {doc dict} { my APIerror _set }
 
@@ -168,6 +171,7 @@ oo::class create phash::multitime::Doc {
 
 	oo::objdefine [self] forward get    $mymulti _get    $doc
 	oo::objdefine [self] forward getv   $mymulti _getv   $doc
+	oo::objdefine [self] forward value  $mymulti _value  $doc
 
 	oo::objdefine [self] forward set    $mymulti _set    $doc
 	oo::objdefine [self] forward setv   $mymulti _setv   $doc

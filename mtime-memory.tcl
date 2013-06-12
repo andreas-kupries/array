@@ -45,6 +45,17 @@ oo::class create phash::mtime::memory {
 	return $mymap($key)
     }
 
+    # value: ?pattern? --> dict (key --> value)
+    method value {{pattern *}} {
+	set result {}
+	foreach k [array names mymap] {
+	    set v $mymap($k)
+	    if {![string match $pattern $v]} continue
+	    dict set result $k $v
+	}
+	return $result
+    }
+
     # # ## ### ##### ######## #############
     ### Modifying operations.
 
