@@ -4,6 +4,12 @@
 
 proc store-class {} { lindex [split [test-class] /] 0 }
 
+proc store-class-methods {} { return {create destroy new} }
+proc store-instc-methods {} { return {clear destroy exists export get getv names set setv size unset unsetv} }
+
+proc multi-store-class-methods {} { return {check create destroy new setup} }
+proc multi-store-instc-methods {} { return {check clear destroy export get getv keys names open setup size unset unsetv} }
+
 proc new-store {} {
     sqlite3              test-database    :memory:
     [store-class] create test-multi-store ::test-database phash

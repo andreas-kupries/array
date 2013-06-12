@@ -46,7 +46,16 @@ test [test-class]-dispatch-1.1 {instance, bad method name} -setup {
 } -cleanup {
     release-store
 } -returnCodes error \
-    -result [badmethod foo {clear destroy export get getv keys names open size unset unsetv}]
+    -result [badmethod foo [multi-store-instc-methods]]
+
+test [test-class]-dispatch-1.2 {class, bad method name} -setup {
+    new-store
+} -body {
+    [info object class test-multi-store] foo
+} -cleanup {
+    release-store
+} -returnCodes error \
+    -result [badmethod foo [multi-store-class-methods]]
 
 # # ## ### ##### ######## ############# #####################
 ## destructor

@@ -10,6 +10,7 @@ package require Tcl 8.5
 package require TclOO
 package require phash::multi
 package require dbutil
+package require oo::util 1.2
 package require sqlite3
 
 # # ## ### ##### ######## ############# #####################
@@ -17,6 +18,29 @@ package require sqlite3
 
 oo::class create phash::multi::sqlite {
     superclass phash::multi
+
+    # # ## ### ##### ######## #############
+
+    classmethod setup {database table} {
+	# Note that an index is set on 'key' alone also, to support
+	# the cross-document searches
+	dbutil setup $database $table {
+	    doc   TEXT,
+	    key   TEXT,
+	    value TEXT NOT NULL,
+	    PRIMARY KEY (doc, key)
+	} {
+	    {key}
+	}
+    }
+
+    classmethod check {database table} {
+	dbutil check $database $table {
+	    {doc   TEXT 0 {} 1}
+	    {key   TEXT 0 {} 2}
+	    {value TEXT 1 {} 0}
+	}
+    }
 
     # # ## ### ##### ######## #############
     ## Lifecycle.
@@ -237,17 +261,13 @@ oo::class create phash::multi::sqlite {
 	set fqndb [self namespace]::DB
 
 	# -- extend init-schema to enable creation of indices on specific columns.
-	if {![dbutil initialize-schema $fqndb reason $table {{
-	    doc   TEXT,
-	    key   TEXT,
-	    value TEXT NOT NULL,
-	    PRIMARY KEY (doc, key)
-	} {
-	    {doc   TEXT 0 {} 1}
-	    {key   TEXT 0 {} 2}
-	    {value TEXT 1 {} 0}
-	}}]} {
-	    my Error $reason BAD SCHEMA
+
+	if {[dbutil has $fqndb $table]} {
+	    if {![[self class] check $fqndb $table]} {
+		my Error $reason BAD SCHEMA
+	    }
+	} else {
+	    [self class] setup $fqndb $table
 	}
 
 	# Generate the custom sql commands.

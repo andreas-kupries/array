@@ -22,7 +22,16 @@ test [test-class]-common::base-dispatch-1.1 {instance, bad method name} -setup {
 } -cleanup {
     release-store
 } -returnCodes error \
-    -result [badmethod foo {clear destroy exists export get getv names set setv size unset unsetv}]
+    -result [badmethod foo [store-instc-methods]]
+
+test [test-class]-common::base-dispatch-1.2 {class, bad method name} -setup {
+    new-store
+} -body {
+    [info object class test-store] foo
+} -cleanup {
+    release-store
+} -returnCodes error \
+    -result [badmethod foo [store-class-methods]]
 
 # # ## ### ##### ######## ############# #####################
 ## setv

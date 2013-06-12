@@ -10,6 +10,7 @@ package require Tcl 8.5
 package require TclOO
 package require phash
 package require dbutil
+package require oo::util 1.2
 package require sqlite3
 
 # # ## ### ##### ######## ############# #####################
@@ -17,6 +18,22 @@ package require sqlite3
 
 oo::class create phash::sqlite {
     superclass phash
+
+    # # ## ### ##### ######## #############
+
+    classmethod setup {database table} {
+	dbutil setup $database $table {
+	    key   TEXT PRIMARY KEY,
+	    value TEXT NOT NULL
+	}
+    }
+
+    classmethod check {database table} {
+	dbutil check $database $table {
+	    {key   TEXT 0 {} 1}
+	    {value TEXT 1 {} 0}
+	}
+    }
 
     # # ## ### ##### ######## #############
     ## Lifecycle.
@@ -149,14 +166,12 @@ oo::class create phash::sqlite {
 
 	set fqndb [self namespace]::DB
 
-	if {![dbutil initialize-schema $fqndb reason $table {{
-	    key   TEXT PRIMARY KEY,
-	    value TEXT NOT NULL
-	} {
-	    {key   TEXT 0 {} 1}
-	    {value TEXT 1 {} 0}
-	}}]} {
-	    my Error $reason BAD SCHEMA
+	if {[dbutil has $fqndb $table]} {
+	    if {![[self class] check $fqndb $table]} {
+		my Error $reason BAD SCHEMA
+	    }
+	} else {
+	    [self class] setup $fqndb $table
 	}
 
 	# Generate the custom sql commands.
@@ -181,8 +196,7 @@ oo::class create phash::sqlite {
 
     method Validate {key} {
 	if {[DB exists $sql_getv]} return
-	my Error "Expected key, got \"$key\"" \
-	    BAD KEY $key
+	my Error "Expected key, got \"$key\"" BAD KEY $key
     }
 
     # # ## ### ##### ######## #############

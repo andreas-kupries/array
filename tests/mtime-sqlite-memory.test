@@ -20,7 +20,7 @@ kt local   testing phash::mtime::sqlite
 proc test-class {} { return phash::mtime::sqlite/memory }
 
 kt source support/common.tcl
-kt source support/setup-sqlite-memory.tcl
+kt source support/setup-mtime-sqlite-memory.tcl
 
 # # ## ### ##### ######## ############# #####################
 

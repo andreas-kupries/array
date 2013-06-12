@@ -23,7 +23,7 @@ kt local   testing phash::mtime::memory
 proc test-class {} { return phash::mtime::memory }
 
 kt source support/common.tcl
-kt source support/setup-memory.tcl
+kt source support/setup-mtime-memory.tcl
 
 # # ## ### ##### ######## ############# #####################
 

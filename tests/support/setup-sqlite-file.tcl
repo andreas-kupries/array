@@ -4,6 +4,9 @@
 
 proc store-class {} { lindex [split [test-class] /] 0 }
 
+proc store-class-methods {} { return {check create destroy new setup} }
+proc store-instc-methods {} { return {check clear destroy exists export get getv names set setup setv size unset unsetv} }
+
 proc new-store {} {
     sqlite3              test-database [file normalize _phash_[pid]_]
     [store-class] create test-store    ::test-database phash
