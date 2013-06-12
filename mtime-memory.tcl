@@ -17,6 +17,13 @@ oo::class create phash::mtime::memory {
     superclass phash::mtime
 
     # # ## ### ##### ######## #############
+    ## State
+
+    variable mymap mytime
+    # mymap:  dict (key --> value)
+    # mytime: dict (key --> mtime)
+
+    # # ## ### ##### ######## #############
     ## Lifecycle.
 
     constructor {} { my clear }
@@ -28,33 +35,25 @@ oo::class create phash::mtime::memory {
     ### Retrieval and query operations.
 
     # size: () --> integer
-    method size {} { array size mymap }
+    method size {} { dict size $mymap }
 
     # names: ?pattern? --> list(string)
-    method names {{pattern *}} { array names mymap $pattern }
+    method names {{pattern *}} { dict keys $mymap $pattern }
 
     # exists: string --> boolean
-    method exists {key} { info exists mymap($key) }
+    method exists {key} { dict exists $mymap $key }
 
     # get: ?pattern? --> dict (key --> value)
-    method get {{pattern *}} { array get mymap $pattern }
+    method get {{pattern *}} { dict filter $mymap key $pattern }
 
     # getv: key --> value
     method getv {key} {
 	my Validate $key
-	return $mymap($key)
+	dict get $mymap $key
     }
 
     # value: ?pattern? --> dict (key --> value)
-    method value {{pattern *}} {
-	set result {}
-	foreach k [array names mymap] {
-	    set v $mymap($k)
-	    if {![string match $pattern $v]} continue
-	    dict set result $k $v
-	}
-	return $result
-    }
+    method value {{pattern *}} { dict filter $mymap value $pattern }
 
     # # ## ### ##### ######## #############
     ### Modifying operations.
@@ -62,9 +61,9 @@ oo::class create phash::mtime::memory {
     # set: dict (key --> value) --> ()
     method set {dict} {
 	set now [clock seconds]
-	array set mymap $dict
-	dict for {k _} $dict {
-	    set mytime($k) $now
+	dict for {k v} $dict {
+	    dict set mymap  $k $v
+	    dict set mytime $k $now
 	}
 	return
     }
@@ -76,29 +75,35 @@ oo::class create phash::mtime::memory {
 	} else {
 	    my ValidateTime $time
 	}
-	set mytime($key) $time
-	set mymap($key)  $value
+	dict set mytime $key $time
+	dict set mymap  $key $value
+	return $value
     }
 
     # unset: ?pattern? --> ()
     method unset {{pattern *}} {
-	array unset mymap  $pattern
-	array unset mytime $pattern
+	if {$pattern eq "*"} {
+	    set mymap  {}
+	    set mytime {}
+	} else {
+	    set mymap  [dict remove $mymap  {*}[dict keys $mymap  $pattern]]
+	    set mytime [dict remove $mytime {*}[dict keys $mytime $pattern]]
+	}
 	return
     }
 
     # unsetv: key --> ()
     method unsetv {key} {
 	my Validate $key
-	unset mymap($key)
-	unset mytime($key)
+	dict unset mymap  $key
+	dict unset mytime $key
 	return
     }
 
     # clear: () --> ()
     method clear {} {
-	array unset mymap  *
-	array unset mytime *
+	set mymap  {}
+	set mytime {}
 	return
     }
 
@@ -107,33 +112,26 @@ oo::class create phash::mtime::memory {
     ## information, bulk and for individual keys.
 
     # get-time: ?pattern? --> dict (key --> mtime)
-    method get-time {{pattern *}} { array get mytime $pattern }
+    method get-time {{pattern *}} { dict filter $mytime key $pattern }
 
     # get-timev: key --> mtime
     method get-timev {key} {
 	my Validate $key
-	return $mytime($key)
+	dict get $mytime $key
     }
     # set-timev: (key, time) --> time
     method set-timev {key time} {
 	my Validate     $key
 	my ValidateTime $time
-	set mytime($key) $time
+	dict set mytime $key $time
 	return $time
     }
-
-    # # ## ### ##### ######## #############
-    ## State
-
-    variable mymap mytime
-    # mymap:  array (key --> value)
-    # mytime: array (key --> mtime)
 
     # # ## ### ##### ######## #############
     ## Internal support.
 
     method Validate {key} {
-	if {[info exists mymap($key)]} return
+	if {[dict exists $mymap $key]} return
 	my Error "Expected key, got \"$key\"" \
 	    BAD KEY $key
     }
