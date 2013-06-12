@@ -415,21 +415,4 @@ test [test-class]-export-json-simple-1.0 {export wrong args, not enough} -setup 
 } -returnCodes error -result "wrong # args: should be \"test-multi-store export format ...\""
 
 # # ## ### ##### ######## ############# #####################
-
-proc serial-store     {} { return test-multi-store }
-proc serial-prefix    {} { return phash::multi }
-proc serial-args      {} { return dict }
-proc serial-result-js {} { return {{"a":{"f":"g","q":"r"},"b":{"c":"f","j":"k"}}} }
-proc serial-result-je {} { return {{"check":"82638ef5f6bc7a5219259f41f2bf97c0","data":{"a":{"f":"g","q":"r"},"b":{"c":"f","j":"k"}},"type":"atest","user":"me","when":"1970-01-01T00:00:00"}} }
-proc serial-setup     {} {
-    set n [test-multi-store open b] ; $n set {j k c f} ; $n destroy
-    set n [test-multi-store open a] ; $n set {q r f g} ; $n destroy
-    return
-}
-
-kt source support/jc.tcl
-kt source parts/export-json-simple.testsuite
-kt source parts/export-json-extended.testsuite
-
-# # ## ### ##### ######## ############# #####################
 return

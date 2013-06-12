@@ -33,6 +33,7 @@ kt source support/common-multi.tcl
 
 kt source parts/sqlite.testsuite
 kt source parts/multi.testsuite
+kt source parts/multi-serial.testsuite
 kt source parts/base.testsuite
 
 # # ## ### ##### ######## ############# #####################
