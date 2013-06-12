@@ -4,11 +4,11 @@
 
 proc store-class {} { test-class }
 
-proc store-class-methods {} { return {create destroy new} }
-proc store-instc-methods {} { return {clear destroy exists export get getv names set setv size unset unsetv} }
+proc store-class-methods {} { class-methods }
+proc store-instc-methods {} { core-instc-methods }
 
-proc multi-store-class-methods {} { return {create destroy new} }
-proc multi-store-instc-methods {} { return {clear destroy export get getv keys names open size unset unsetv} }
+proc multi-store-class-methods {} { class-methods }
+proc multi-store-instc-methods {} { multi-instc-methods }
 
 proc new-store {} {
     [test-class] create test-multi-store

@@ -4,8 +4,8 @@
 
 proc store-class {} { lindex [split [test-class] /] 0 }
 
-proc store-class-methods {} { return {check create destroy new setup} }
-proc store-instc-methods {} { return {check clear destroy exists export get get-time get-timev getv names set set-timev setup setv size unset unsetv} }
+proc store-class-methods {} { U [class-methods]      [sqlite-methods] }
+proc store-instc-methods {} { U [core-instc-methods] [sqlite-methods] [time-instc-methods] }
 
 proc new-store {} {
     sqlite3              test-database :memory:

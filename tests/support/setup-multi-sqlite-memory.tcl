@@ -4,11 +4,11 @@
 
 proc store-class {} { lindex [split [test-class] /] 0 }
 
-proc store-class-methods {} { return {create destroy new} }
-proc store-instc-methods {} { return {clear destroy exists export get getv names set setv size unset unsetv} }
+proc store-class-methods {} { class-methods }
+proc store-instc-methods {} { core-instc-methods }
 
-proc multi-store-class-methods {} { return {check create destroy new setup} }
-proc multi-store-instc-methods {} { return {check clear destroy export get getv keys names open setup size unset unsetv} }
+proc multi-store-class-methods {} { U [class-methods]       [sqlite-methods] }
+proc multi-store-instc-methods {} { U [multi-instc-methods] [sqlite-methods] }
 
 proc new-store {} {
     sqlite3              test-database    :memory:
