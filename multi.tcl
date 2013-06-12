@@ -34,7 +34,7 @@ oo::class create phash::multi {
     #
     ## Helper class API providing access to named partitions,
     ## i.e. documents of the multi instance. This API is essentially
-    ## the 'base' API, with just the partiion key added as first
+    ## the 'base' API, with just the partition key added as first
     ## argument.
 
     # size () --> integer
@@ -133,7 +133,7 @@ oo::class create phash::multi::Doc {
     constructor {multi doc} {
 	# The API is implemented as forwards from this instance to the
 	# multi store, properly prefixing all methods with the name of
-	# the document to access. No local state at all.
+	# the document to access. No local state is kept, at all.
 
 	set mymulti [info object namespace $multi]::my
 
