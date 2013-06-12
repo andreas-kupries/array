@@ -270,6 +270,16 @@ test [test-class]-common::core-set-1.2 {set} -setup {
     release-store
 } -result {{} {A B C R X Z}}
 
+test [test-class]-common::core-set-1.3 {set, multiple, merge, not replace} -setup {
+    new-store
+} -body {
+    test-store set {A B X @}
+    test-store set     {X Z C R}
+    kt dictsort [test-store get]
+} -cleanup {
+    release-store
+} -result {A B C R X Z}
+
 # # ## ### ##### ######## ############# #####################
 ## setv
 
