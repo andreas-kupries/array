@@ -172,7 +172,7 @@ test [test-class]-setv-1.6 {setv, bad time} -setup {
 
 proc serial-store     {} { return test-store }
 proc serial-prefix    {} { return phash::mtime }
-proc serial-args      {} { return {dictv dictt} }
+proc serial-args      {} { return dict }
 proc serial-result-js {} { return {{"a":["x","1970-01-01T00:00:00"],"b":["c","1970-01-01T00:00:00"]}} }
 proc serial-result-je {} { return {{"check":"d2b5743d7f11a9fe10d9926c924ca777","data":{"a":["x","1970-01-01T00:00:00"],"b":["c","1970-01-01T00:00:00"]},"type":"atest","user":"me","when":"1970-01-01T00:00:00"}} }
 proc serial-setup     {} {

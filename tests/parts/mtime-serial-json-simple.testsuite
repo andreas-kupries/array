@@ -11,16 +11,16 @@
 
 test phash::mtime::serial::json-simple-generate-1.0 {generate, wrong args, not enough} -body {
     phash::mtime::serial::json-simple generate
-} -returnCodes error -result "wrong # args: should be \"phash::mtime::serial::json-simple generate dictv dictt\""
+} -returnCodes error -result "wrong # args: should be \"phash::mtime::serial::json-simple generate dict\""
 
 test phash::mtime::serial::json-simple-generate-1.1 {generate, wrong args, too many} -body {
     phash::mtime::serial::json-simple generate DV DT X
-} -returnCodes error -result "wrong # args: should be \"phash::mtime::serial::json-simple generate dictv dictt\""
+} -returnCodes error -result "wrong # args: should be \"phash::mtime::serial::json-simple generate dict\""
 
 test phash::mtime::serial::json-simple-generate-2.0 {generate, ordered} -setup {
     jcsave 0 0
 } -body {
-    phash::mtime::serial::json-simple generate {a x b c} {a 0 b 0}
+    phash::mtime::serial::json-simple generate {a {x 0} b {c 0}}
 } -cleanup {
     jcrestore
 } -result {{"a":["x","1970-01-01T00:00:00"],"b":["c","1970-01-01T00:00:00"]}}
@@ -28,7 +28,7 @@ test phash::mtime::serial::json-simple-generate-2.0 {generate, ordered} -setup {
 test phash::mtime::serial::json-simple-generate-2.1 {generate, unordered} -setup {
     jcsave 0 0
 } -body {
-    phash::mtime::serial::json-simple generate {b c a x} {a 0 b 0}
+    phash::mtime::serial::json-simple generate {b {c 0} a {x 0}}
 } -cleanup {
     jcrestore
 } -result {{"a":["x","1970-01-01T00:00:00"],"b":["c","1970-01-01T00:00:00"]}}
@@ -36,18 +36,10 @@ test phash::mtime::serial::json-simple-generate-2.1 {generate, unordered} -setup
 test phash::mtime::serial::json-simple-generate-2.2 {generate, bad input, not a dict} -setup {
     jcsave 0 0
 } -body {
-    phash::mtime::serial::json-simple generate X Y
+    phash::mtime::serial::json-simple generate X
 } -cleanup {
     jcrestore
 } -returnCodes error -result {missing value to go with key}
-
-test phash::mtime::serial::json-simple-generate-2.3 {generate, bad input, key mismatch} -setup {
-    jcsave 0 0
-} -body {
-    phash::mtime::serial::json-simple generate {a b} {b c}
-} -cleanup {
-    jcrestore
-} -returnCodes error -result {Data mismatch between value and time dictionaries}
 
 # # ## ### ##### ######## ############# #####################
 return

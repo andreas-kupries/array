@@ -85,9 +85,16 @@ oo::class create phash::mtime {
 
     method export {format args} {
 	package require phash::mtime::serial::$format
-	return [phash::mtime::serial::$format generate \
-		    [my get] [my get-time] \
-		    {*}$args]
+	# Retrieve separate value and time maps, and merge
+	# them. Consider creating an mtime API method to hide the
+	# structure.
+	set vmap [my get]
+	set tmap [my get-time]
+	set vt {}
+	foreach k [dict keys $vmap] {
+	    dict set vt $k [list [dict get $vmap $k] [dict get $tmap $k]]
+	}
+	return [phash::mtime::serial::$format generate $vt {*}$args]
     }
 
     # # ## ### ##### ######## #############

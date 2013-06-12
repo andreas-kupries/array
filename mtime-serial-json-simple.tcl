@@ -19,17 +19,12 @@ namespace eval ::phash::mtime::serial::json-simple {}
 # # ## ### ##### ######## ############# #####################
 ## API Implementation
 
-proc ::phash::mtime::serial::json-simple::generate {dictv dictt} {
-    set kv [lsort -dict [dict keys $dictv]]
-    set kt [lsort -dict [dict keys $dictt]]
-    if {$kv ne $kt} {
-	return -code error -errorcode {PHASH MTIME SERIAL JSON-SIMPLE GEN BAD} \
-	    "Data mismatch between value and time dictionaries"
-    }
+proc ::phash::mtime::serial::json-simple::generate {dict} {
     set tmp {}
-    foreach k $kv {
-	set v [json::write::string [dict get $dictv $k]]
-	set t [json::write::string [FmtTime [dict get $dictt $k]]]
+    foreach k [lsort -dict [dict keys $dict]] {
+	lassign [dict get $dict $k] v t
+	set v [json::write::string $v]
+	set t [json::write::string [FmtTime $t]]
 	lappend tmp $k [json::write::array $v $t]
     }
     return [json::write::object {*}$tmp]

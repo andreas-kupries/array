@@ -11,16 +11,16 @@
 
 test phash::mtime::serial::json-extended-generate-1.0 {generate, wrong args, not enough} -body {
     phash::mtime::serial::json-extended generate
-} -returnCodes error -result "wrong # args: should be \"phash::mtime::serial::json-extended generate dictv dictt ?type? ?user? ?when?\""
+} -returnCodes error -result "wrong # args: should be \"phash::mtime::serial::json-extended generate dict ?type? ?user? ?when?\""
 
 test phash::mtime::serial::json-extended-generate-1.1 {generate, wrong args, too many} -body {
     phash::mtime::serial::json-extended generate DV DT T U W X
-} -returnCodes error -result "wrong # args: should be \"phash::mtime::serial::json-extended generate dictv dictt ?type? ?user? ?when?\""
+} -returnCodes error -result "wrong # args: should be \"phash::mtime::serial::json-extended generate dict ?type? ?user? ?when?\""
 
 test phash::mtime::serial::json-extended-generate-2.0 {generate, ordered} -setup {
     jcsave 0 0
 } -body {
-    phash::mtime::serial::json-extended generate {a x b c} {a 0 b 0} atest me 0
+    phash::mtime::serial::json-extended generate {a {x 0} b {c 0}} atest me 0
 } -cleanup {
     jcrestore
 } -result {{"check":"d2b5743d7f11a9fe10d9926c924ca777","data":{"a":["x","1970-01-01T00:00:00"],"b":["c","1970-01-01T00:00:00"]},"type":"atest","user":"me","when":"1970-01-01T00:00:00"}}
@@ -28,7 +28,7 @@ test phash::mtime::serial::json-extended-generate-2.0 {generate, ordered} -setup
 test phash::mtime::serial::json-extended-generate-2.1 {generate, unordered} -setup {
     jcsave 0 0
 } -body {
-    phash::mtime::serial::json-extended generate {b c a x} {a 0 b 0} atest me 0
+    phash::mtime::serial::json-extended generate {b {c 0} a {x 0}} atest me 0
 } -cleanup {
     jcrestore
 } -result {{"check":"d2b5743d7f11a9fe10d9926c924ca777","data":{"a":["x","1970-01-01T00:00:00"],"b":["c","1970-01-01T00:00:00"]},"type":"atest","user":"me","when":"1970-01-01T00:00:00"}}
@@ -36,18 +36,10 @@ test phash::mtime::serial::json-extended-generate-2.1 {generate, unordered} -set
 test phash::mtime::serial::json-extended-generate-2.2 {generate, bad input, not a dict} -setup {
     jcsave 0 0
 } -body {
-    phash::mtime::serial::json-extended generate X Y
+    phash::mtime::serial::json-extended generate X
 } -cleanup {
     jcrestore
 } -returnCodes error -result {missing value to go with key}
-
-test phash::mtime::serial::json-extended-generate-2.3 {generate, bad input, key mismatch} -setup {
-    jcsave 0 0
-} -body {
-    phash::mtime::serial::json-extended generate {a b} {b c}
-} -cleanup {
-    jcrestore
-} -returnCodes error -result {Data mismatch between value and time dictionaries}
 
 # TODO: tcl_platform dependency, default type.
 # TODO: Bad timestamp (non-integer)

@@ -22,13 +22,7 @@ namespace eval ::phash::mtime::serial::json-extended {}
 # # ## ### ##### ######## ############# #####################
 ## API Implementation
 
-proc ::phash::mtime::serial::json-extended::generate {dictv dictt {type {}} {user {}} {when {}}} {
-    set kv [lsort -dict [dict keys $dictv]]
-    set kt [lsort -dict [dict keys $dictt]]
-    if {$kv ne $kt} {
-	return -code error -errorcode {PHASH MTIME SERIAL JSON-SIMPLE GEN BAD} \
-	    "Data mismatch between value and time dictionaries"
-    }
+proc ::phash::mtime::serial::json-extended::generate {dict {type {}} {user {}} {when {}}} {
     if {$type eq {}} { set type array::base }
     if {$user eq {}} { set user $::tcl_platform(user) }
     if {$when eq {}} { set when [clock seconds] }
@@ -36,9 +30,9 @@ proc ::phash::mtime::serial::json-extended::generate {dictv dictt {type {}} {use
     set when [FmtTime $when]
 
     set tmp {}
-    foreach k $kv {
-	set v [dict get $dictv $k]
-	set t [FmtTime [dict get $dictt $k]]
+    foreach k [lsort -dict [dict keys $dict]] {
+	lassign [dict get $dict $k] v t
+	set t [FmtTime $t]
 	lappend sorted $k $t $v
 	lappend tmp $k [json::write::array \
 			    [json::write::string $v] \
