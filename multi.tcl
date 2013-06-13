@@ -116,7 +116,7 @@ oo::class create phash::multi {
     ## Internal helpers
 
     method Error {text args} {
-	return -code error -errorcode [list PHASH {*}$args] $text
+	return -code error -errorcode [list PHASH MULTI {*}$args] $text
     }
 
     method APIerror {api} {

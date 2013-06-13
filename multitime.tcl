@@ -135,7 +135,7 @@ oo::class create phash::multitime {
     ## Internal helpers
 
     method Error {text args} {
-	return -code error -errorcode [list PHASH {*}$args] $text
+	return -code error -errorcode [list PHASH MULTI-TIME {*}$args] $text
     }
 
     method APIerror {api} {
@@ -144,7 +144,7 @@ oo::class create phash::multitime {
 
     method ValidateTime {t} {
 	if {[string is integer -strict $t]} return
-	my Error "Expected a time, got \"$t\"" PHASH MTIME BAD TIME $t
+	my Error "Expected a time, got \"$t\"" PHASH MULTI-TIME BAD TIME $t
     }
 
     # # ## ### ##### ######## #############
