@@ -19,6 +19,7 @@ proc class-methods {} { return {create new destroy} }
 proc core-instc-methods  {} { return {clear destroy exists export get getv names set setv size unset unsetv value} }
 proc multi-instc-methods {} { return {clear destroy export get getv keys names open size unset unsetv} }
 proc time-instc-methods  {} { return {get-time get-timev set-timev} }
+proc list-instc-methods  {} { return {append remove} }
 proc sqlite-methods      {} { return {check setup} }
 
 proc U {args} {
