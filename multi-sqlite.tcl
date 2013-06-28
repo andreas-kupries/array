@@ -33,12 +33,13 @@ oo::class create phash::multi::sqlite {
 	} {{key} {doc value}}
     }
 
-    classmethod check {database table} {
+    classmethod check {database table evar} {
+	upvar 1 $evar reason
 	dbutil check $database $table {
 	    {doc   TEXT 0 {} 1}
 	    {key   TEXT 0 {} 2}
 	    {value TEXT 1 {} 0}
-	}
+	} reason
     }
 
     # # ## ### ##### ######## #############
@@ -275,7 +276,7 @@ oo::class create phash::multi::sqlite {
 	# -- extend init-schema to enable creation of indices on specific columns.
 
 	if {[dbutil has $fqndb $table]} {
-	    if {![[self class] check $fqndb $table]} {
+	    if {![[self class] check $fqndb $table reason]} {
 		my Error $reason BAD SCHEMA
 	    }
 	} else {

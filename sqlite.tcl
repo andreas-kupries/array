@@ -28,11 +28,12 @@ oo::class create phash::sqlite {
 	} {{value}}
     }
 
-    classmethod check {database table} {
+    classmethod check {database table evar} {
+	upvar 1 $evar reason
 	dbutil check $database $table {
 	    {key   TEXT 0 {} 1}
 	    {value TEXT 1 {} 0}
-	}
+	} reason
     }
 
     # # ## ### ##### ######## #############
@@ -180,7 +181,7 @@ oo::class create phash::sqlite {
 	set fqndb [self namespace]::DB
 
 	if {[dbutil has $fqndb $table]} {
-	    if {![[self class] check $fqndb $table]} {
+	    if {![[self class] check $fqndb $table reason]} {
 		my Error $reason BAD SCHEMA
 	    }
 	} else {
