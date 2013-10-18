@@ -3,6 +3,18 @@
 # # ## ### ##### ######## ############# #####################
 ## sqlite based phash::multitime storage.
 
+# @@ Meta Begin
+# Package phash::multitime::sqlite 0
+# Meta author      ?
+# Meta category    ?
+# Meta description ?
+# Meta location    http:/core.tcl.tk/akupries/array
+# Meta platform    tcl
+# Meta require     ?
+# Meta subject     ?
+# Meta summary     ?
+# @@ Meta End
+
 # # ## ### ##### ######## ############# #####################
 ## Requisites
 

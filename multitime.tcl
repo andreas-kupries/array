@@ -11,6 +11,18 @@
 ## implement. It also provides standard APIs for the
 ## de(serialization) of array stores.
 
+# @@ Meta Begin
+# Package phash::multitime 0
+# Meta author      ?
+# Meta category    ?
+# Meta description ?
+# Meta location    http:/core.tcl.tk/akupries/array
+# Meta platform    tcl
+# Meta require     ?
+# Meta subject     ?
+# Meta summary     ?
+# @@ Meta End
+
 # # ## ### ##### ######## ############# #####################
 ## Requisites
 

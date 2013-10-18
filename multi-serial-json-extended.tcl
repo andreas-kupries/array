@@ -2,6 +2,18 @@
 ## (c) 2013 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
 
+# @@ Meta Begin
+# Package phash::multi::serial::json-extended 0
+# Meta author      ?
+# Meta category    ?
+# Meta description ?
+# Meta location    http:/core.tcl.tk/akupries/array
+# Meta platform    tcl
+# Meta require     ?
+# Meta subject     ?
+# Meta summary     ?
+# @@ Meta End
+
 ## Commands to convert 'multi' arrays into json and back.
 ## The intermediate representation is a Tcl dictionary.
 ## This package generates an 'extended' representation (compared to
